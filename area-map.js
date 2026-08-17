@@ -7,7 +7,8 @@
   var STORAGE = "hg-area-map-v1";
   var MAPS_STORAGE = "hg-maps-config-v2";
   var ADMIN_GATE = "hg-area-admin";
-  var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a", monument: "#d4b56a" };
+  var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a", monument: "#d4b56a", tour: "#d36a3a", building: "#c9a06a", area: "#7eb56a" };
+  var ITIN_STORAGE = "hg-itinerary-v1";
   var DEFAULT_MAPS = {
     center: { lat: 39.812, lng: -77.236 },
     zoom: 13.4,
@@ -119,11 +120,33 @@
     return visible;
   }
 
+  function placeKinds(place) {
+    if (place && Array.isArray(place.kinds) && place.kinds.length) return place.kinds;
+    if (!place) return ["area"];
+    if (place.category === "monument") return ["monument"];
+    if (place.category === "meet") return ["tour", "building"];
+    if (place.id === "david-wills-house") return ["building"];
+    if (place.id === "seminary-ridge") return ["area", "building"];
+    if (place.category === "downtown") return ["area", "tour"];
+    return ["area"];
+  }
+
+  function primaryKind(place) {
+    var kinds = placeKinds(place);
+    var order = ["tour", "building", "area", "monument"];
+    var i;
+    for (i = 0; i < order.length; i++) {
+      if (kinds.indexOf(order[i]) !== -1) return order[i];
+    }
+    return kinds[0] || "area";
+  }
+
   function pinStyle(feature, selectedId, zoom) {
     var cat = feature.get("category");
+    var kind = feature.get("kind") || (cat === "monument" ? "monument" : "area");
     var selected = feature.get("placeId") === selectedId;
-    var color = PIN_COLOR[cat] || "#e0be72";
-    var monument = cat === "monument";
+    var color = PIN_COLOR[kind] || PIN_COLOR[cat] || "#e0be72";
+    var monument = cat === "monument" || kind === "monument";
     var showLabel = selected || (!monument && zoom >= 14.5) || (monument && zoom >= 16.4);
     var style = {
       image: new ol.style.Circle({
@@ -192,7 +215,7 @@
     stage.classList.remove("is-google");
     stage.classList.add("is-ol");
     stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div>" +
-      "<p class=\"dio-hint\">Gold clusters are battlefield monuments — zoom in or click a cluster, then a pin. Close the popup to zoom back out. Satellite is Esri World Imagery (no Google key).</p>";
+      "<p class=\"dio-hint\">A gold circle with a number (for example 4) is a cluster — that many monuments sit close together at this zoom. Click it to zoom in. Close a popup to zoom back out.</p>";
     var host = stage.querySelector("[data-ol-host]");
     var detail = document.querySelector("[data-diorama-detail]");
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -274,6 +297,17 @@
     basemap.setAttribute("aria-label", "Basemap");
     basemap.innerHTML = "<button type=\"button\" data-basemap=\"map\" class=\"is-active\">Map</button><button type=\"button\" data-basemap=\"sat\">Satellite</button>";
     host.appendChild(basemap);
+
+    var legend = document.createElement("div");
+    legend.className = "ol-legend";
+    legend.setAttribute("aria-label", "Map legend");
+    legend.innerHTML =
+      "<p><span class=\"leg-swatch leg-cluster\">4</span> Cluster: that many monuments overlap at this zoom. Click to zoom in.</p>" +
+      "<p><span class=\"leg-swatch leg-monument\"></span> Monument</p>" +
+      "<p><span class=\"leg-swatch leg-tour\"></span> Tour location</p>" +
+      "<p><span class=\"leg-swatch leg-building\"></span> Significant building</p>" +
+      "<p><span class=\"leg-swatch leg-area\"></span> Popular area</p>";
+    host.appendChild(legend);
 
     function setBasemap(mode) {
       var satOn = mode === "sat";
@@ -386,6 +420,18 @@
       if (opts.onSelect) opts.onSelect(place);
     };
 
+    var filters = { monument: true, tour: true, building: true, area: true };
+
+    function placeMatchesFilter(place) {
+      var box = document.querySelector("[data-map-filters]");
+      if (box) {
+        box.querySelectorAll("input[type=checkbox][data-filter]").forEach(function (input) {
+          filters[input.getAttribute("data-filter")] = input.checked;
+        });
+      }
+      return placeKinds(place).some(function (kind) { return filters[kind]; });
+    }
+
     function addMonumentFeatures(list) {
       monumentSource.clear();
       list.forEach(function (place) {
@@ -394,7 +440,8 @@
           geometry: new ol.geom.Point(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)])),
           placeId: place.id,
           title: place.title,
-          category: "monument"
+          category: "monument",
+          kind: "monument"
         }));
       });
     }
@@ -403,18 +450,22 @@
       places = nextPlaces;
       monuments = filterMonumentsAwayFromTours(opts.monuments || [], places);
       allPlaces = places.concat(monuments);
+      stage._allPlaces = allPlaces;
       pinSource.clear();
       var visible = fillList(places, opts);
       visible.forEach(function (place) {
         if (!isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) return;
+        if (!placeMatchesFilter(place)) return;
         pinSource.addFeature(new ol.Feature({
           geometry: new ol.geom.Point(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)])),
           placeId: place.id,
           title: place.title,
-          category: place.category
+          category: place.category,
+          kind: primaryKind(place)
         }));
       });
-      addMonumentFeatures(monuments);
+      addMonumentFeatures(filters.monument ? monuments : []);
+      monumentLayer.setVisible(filters.monument);
     }
 
     var search = document.querySelector("[data-monument-search]");
@@ -438,6 +489,14 @@
       searchHits.addEventListener("click", function (e) {
         var btn = e.target.closest("button[data-id]");
         if (btn && stage._hgSelect) stage._hgSelect(btn.getAttribute("data-id"));
+      });
+    }
+
+    var filterBox = document.querySelector("[data-map-filters]");
+    if (filterBox && !filterBox.dataset.bound) {
+      filterBox.dataset.bound = "1";
+      filterBox.addEventListener("change", function () {
+        syncMarkers(places);
       });
     }
 
@@ -614,7 +673,230 @@
     if (place.tourHref) {
       html += "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>";
     }
+    html += "<p><button type=\"button\" class=\"btn btn-ghost btn-sm\" data-add-itinerary=\"" + esc(place.id) + "\">Add to itinerary</button></p>";
     return html;
+  }
+
+  function readItinerary() {
+    try {
+      var raw = localStorage.getItem(ITIN_STORAGE);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function writeItinerary(items) {
+    localStorage.setItem(ITIN_STORAGE, JSON.stringify(items));
+  }
+
+  function itineraryStatus(msg) {
+    var el = document.querySelector("[data-itinerary-status]");
+    if (el) el.textContent = msg || "";
+  }
+
+  function renderItinerary() {
+    var list = document.querySelector("[data-itinerary-list]");
+    var count = document.querySelector("[data-itinerary-count]");
+    var items = readItinerary();
+    if (count) count.textContent = String(items.length);
+    if (!list) return;
+    list.innerHTML = "";
+    items.forEach(function (stop, i) {
+      var li = document.createElement("li");
+      li.innerHTML = "<b>" + esc(stop.title) + "</b><span>" + esc(formatCoords(stop.lat, stop.lng)) + "</span>" +
+        "<button type=\"button\" class=\"itin-remove\" data-remove-itinerary=\"" + esc(stop.id) + "\" aria-label=\"Remove " + esc(stop.title) + "\">Remove</button>";
+      li.style.order = String(i);
+      list.appendChild(li);
+    });
+    var empty = document.querySelector("[data-itinerary-empty]");
+    if (empty) empty.hidden = items.length > 0;
+  }
+
+  function addToItinerary(place) {
+    if (!place) return;
+    var items = readItinerary();
+    if (items.some(function (s) { return s.id === place.id; })) {
+      itineraryStatus(place.title + " is already on your list.");
+      renderItinerary();
+      return;
+    }
+    if (items.length >= 20) {
+      itineraryStatus("Twenty stops is the cap for this printed list.");
+      return;
+    }
+    items.push({
+      id: place.id,
+      title: place.title,
+      blurb: place.blurb || "",
+      lat: place.lat,
+      lng: place.lng,
+      tourLabel: place.tourLabel || "",
+      kinds: placeKinds(place)
+    });
+    writeItinerary(items);
+    renderItinerary();
+    itineraryStatus("Added " + place.title + ".");
+  }
+
+  function removeFromItinerary(id) {
+    writeItinerary(readItinerary().filter(function (s) { return s.id !== id; }));
+    renderItinerary();
+    itineraryStatus("Removed.");
+  }
+
+  function itineraryPlainText(items) {
+    var lines = [
+      "Hallowed Ground Battlefield Tours",
+      "Gettysburg, PA field itinerary",
+      "Sample ticket office: 100 Sample Street, Gettysburg, PA 17325 (concept)",
+      "tours@hallowedground.test · (717) 555-0100",
+      ""
+    ];
+    items.forEach(function (stop, i) {
+      lines.push((i + 1) + ". " + stop.title);
+      if (isFinite(Number(stop.lat))) lines.push("   " + formatCoords(stop.lat, stop.lng));
+      if (stop.blurb) lines.push("   " + stop.blurb);
+      if (stop.tourLabel) lines.push("   Tour: " + stop.tourLabel);
+      lines.push("");
+    });
+    lines.push("This concept list is a planning aid, not a live mailed product until the Netlify form is wired in production.");
+    return lines.join("\n");
+  }
+
+  function downloadItineraryPdf() {
+    var items = readItinerary();
+    if (!items.length) {
+      itineraryStatus("Add a stop from a popup first.");
+      return;
+    }
+    var jsPdfNs = window.jspdf;
+    if (jsPdfNs && jsPdfNs.jsPDF) {
+      var doc = new jsPdfNs.jsPDF({ unit: "pt", format: "letter" });
+      var y = 48;
+      var wrap = function (text, x, max) {
+        var lines = doc.splitTextToSize(text, max);
+        lines.forEach(function (line) {
+          if (y > 740) {
+            doc.addPage();
+            y = 48;
+          }
+          doc.text(line, x, y);
+          y += 14;
+        });
+      };
+      doc.setFont("times", "bold");
+      doc.setFontSize(16);
+      wrap("Hallowed Ground Battlefield Tours", 48, 514);
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      wrap("Gettysburg, Pennsylvania — guest field itinerary", 48, 514);
+      y += 6;
+      wrap("Sample ticket office: 100 Sample Street, Gettysburg, PA 17325 (concept placeholder).", 48, 514);
+      wrap("tours@hallowedground.test · (717) 555-0100", 48, 514);
+      y += 8;
+      items.forEach(function (stop, i) {
+        doc.setFont("times", "bold");
+        wrap((i + 1) + ". " + stop.title, 48, 514);
+        doc.setFont("times", "normal");
+        if (isFinite(Number(stop.lat))) wrap(formatCoords(stop.lat, stop.lng), 64, 498);
+        if (stop.blurb) wrap(stop.blurb, 64, 498);
+        if (stop.tourLabel) wrap("Related tour: " + stop.tourLabel, 64, 498);
+        y += 6;
+      });
+      doc.save("gettysburg-field-itinerary.pdf");
+      itineraryStatus("Saved gettysburg-field-itinerary.pdf to this device.");
+      return;
+    }
+    printItinerary();
+  }
+
+  function printItinerary() {
+    var items = readItinerary();
+    if (!items.length) {
+      itineraryStatus("Add a stop from a popup first.");
+      return;
+    }
+    var win = window.open("", "itinprint");
+    if (!win) {
+      itineraryStatus("Allow pop-ups to print, or use Save as PDF.");
+      return;
+    }
+    win.document.write("<!DOCTYPE html><html><head><title>Gettysburg field itinerary</title>");
+    win.document.write("<style>body{font:14px/1.45 Georgia,serif;padding:32px;color:#14100a} h1{font-size:22px} ol{padding-left:1.2rem} .coords{font-family:monospace;font-size:12px}</style></head><body>");
+    win.document.write("<h1>Hallowed Ground Battlefield Tours</h1><p>Gettysburg, PA field itinerary</p>");
+    win.document.write("<p>Sample ticket office: 100 Sample Street, Gettysburg, PA 17325 (concept).<br>tours@hallowedground.test · (717) 555-0100</p><ol>");
+    items.forEach(function (stop) {
+      win.document.write("<li><strong>" + esc(stop.title) + "</strong>");
+      if (isFinite(Number(stop.lat))) win.document.write("<div class=\"coords\">" + esc(formatCoords(stop.lat, stop.lng)) + "</div>");
+      if (stop.blurb) win.document.write("<p>" + esc(stop.blurb) + "</p>");
+      win.document.write("</li>");
+    });
+    win.document.write("</ol></body></html>");
+    win.document.close();
+    win.focus();
+    win.print();
+  }
+
+  function bindItineraryUi() {
+    var root = document.querySelector("[data-itinerary]");
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = "1";
+    renderItinerary();
+    root.addEventListener("click", function (e) {
+      var rm = e.target.closest("[data-remove-itinerary]");
+      if (rm) {
+        e.preventDefault();
+        removeFromItinerary(rm.getAttribute("data-remove-itinerary"));
+      }
+    });
+    if (!document.documentElement.dataset.itinAdd) {
+      document.documentElement.dataset.itinAdd = "1";
+      document.addEventListener("click", function (e) {
+        var addBtn = e.target.closest("[data-add-itinerary]");
+        if (!addBtn) return;
+        e.preventDefault();
+        var host = document.querySelector("[data-diorama]");
+        var pool = (host && host._allPlaces) || [];
+        var place = pool.filter(function (p) { return p.id === addBtn.getAttribute("data-add-itinerary"); })[0];
+        if (place) addToItinerary(place);
+      });
+    }
+    var pdfBtn = root.querySelector("[data-itinerary-pdf]");
+    var printBtn = root.querySelector("[data-itinerary-print]");
+    if (pdfBtn) pdfBtn.addEventListener("click", function (e) { e.preventDefault(); downloadItineraryPdf(); });
+    if (printBtn) printBtn.addEventListener("click", function (e) { e.preventDefault(); printItinerary(); });
+    var form = root.querySelector("[data-itinerary-mail]");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var items = readItinerary();
+        if (!items.length) {
+          itineraryStatus("Add at least one stop before requesting mail.");
+          return;
+        }
+        var bodyField = form.querySelector("[name=itinerary]");
+        if (bodyField) bodyField.value = itineraryPlainText(items);
+        var payload = new URLSearchParams(new FormData(form)).toString();
+        fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: payload
+        }).then(function (res) {
+          if (!res.ok) throw new Error("not-netlify");
+          itineraryStatus("Mail request received. On a live Netlify site this lands in Forms.");
+          form.reset();
+        }).catch(function () {
+          var mail = "mailto:tours@hallowedground.test?subject=" + encodeURIComponent("Field itinerary mail request") +
+            "&body=" + encodeURIComponent(itineraryPlainText(items) + "\n\nName: " + (form.guest_name && form.guest_name.value) +
+              "\nEmail: " + (form.email && form.email.value) +
+              "\nAddress: " + (form.street && form.street.value) + ", " + (form.city && form.city.value) + " " + (form.region && form.region.value) + " " + (form.postal && form.postal.value));
+          window.location.href = mail;
+          itineraryStatus("This concept host opened an email to tours@hallowedground.test. On Netlify the same form is collected without leaving the page.");
+        });
+      });
+    }
   }
 
   function setPose(world, yaw, pitch) {
@@ -818,6 +1100,7 @@
     if (!stage) return;
     loadPlaces(function (places) {
       loadMonuments(function (monuments) {
+        bindItineraryUi();
         renderView(stage, places, { monuments: monuments });
       });
     });

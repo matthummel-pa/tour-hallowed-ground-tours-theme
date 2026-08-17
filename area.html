@@ -238,19 +238,51 @@
       <div class="section-head reveal">
         <span class="eyebrow">The Ground</span>
         <h2>The field, from the air.</h2>
-        <p>An OpenLayers map of Gettysburg, PA — streets, building footprints, and the battlefield’s monuments as clickable pins. Switch to satellite for aerial ground. A popup names the monument, shows a public-domain photograph when one is on file, and gives the coordinates.</p>
+        <p>An OpenLayers map of Gettysburg, PA. Numbered gold circles are clusters — a 4 means four monuments sit on top of each other at this zoom; click to spread them. Filter monuments, tour locations, buildings, and popular ground. Switch to satellite for aerial tiles. Build a field itinerary and save it as a PDF, or ask us to mail a copy.</p>
       </div>
       <div class="diorama-layout reveal">
         <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive OpenLayers map of Gettysburg"></div>
         <aside class="diorama-panel">
           <div data-diorama-detail>
-            <p class="lede">Click a monument or tour pin. The popup carries the name, coordinates, and a public-domain photo when we have one.</p>
+            <p class="lede">Click a cluster or pin. Popups carry the name, coordinates, and a public-domain photo when we have one.</p>
           </div>
+          <fieldset class="map-filters" data-map-filters>
+            <legend>Show on the map</legend>
+            <label><input type="checkbox" data-filter="monument" checked> Monuments</label>
+            <label><input type="checkbox" data-filter="tour" checked> Tour locations</label>
+            <label><input type="checkbox" data-filter="building" checked> Significant buildings</label>
+            <label><input type="checkbox" data-filter="area" checked> Popular areas</label>
+          </fieldset>
           <label class="dio-search-label" for="monument-search">Find a monument</label>
           <input id="monument-search" class="dio-search" type="search" data-monument-search placeholder="Pennsylvania Memorial, 20th Maine…" autocomplete="off">
           <div class="dio-place-list" data-monument-hits></div>
           <p class="dio-list-kicker">Tour geography</p>
           <ul class="dio-place-list" data-diorama-list></ul>
+          <div class="itinerary-card" data-itinerary>
+            <span class="eyebrow">Your field list</span>
+            <h3>Itinerary <span data-itinerary-count>0</span></h3>
+            <p class="lede" data-itinerary-empty>Add stops from a popup. Save a PDF on this device, print it, or ask us to mail a copy.</p>
+            <ol class="itin-list" data-itinerary-list></ol>
+            <div class="itin-actions">
+              <button type="button" class="btn btn-primary btn-sm" data-itinerary-pdf>Save as PDF</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-itinerary-print>Print</button>
+            </div>
+            <form class="itin-mail" name="itinerary-mail" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-itinerary-mail>
+              <input type="hidden" name="form-name" value="itinerary-mail">
+              <p class="hidden-honeypot"><label>Leave blank <input name="bot-field"></label></p>
+              <span class="eyebrow">Mail a copy</span>
+              <p>On Netlify this form is collected. On this concept host it opens an email to tours@hallowedground.test.</p>
+              <div class="field"><label for="itinName">Name</label><input id="itinName" name="guest_name" autocomplete="name" required></div>
+              <div class="field"><label for="itinEmail">Email</label><input id="itinEmail" name="email" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="itinStreet">Street</label><input id="itinStreet" name="street" autocomplete="street-address" required></div>
+              <div class="field"><label for="itinCity">City</label><input id="itinCity" name="city" autocomplete="address-level2" required></div>
+              <div class="field"><label for="itinRegion">State</label><input id="itinRegion" name="region" autocomplete="address-level1" required></div>
+              <div class="field"><label for="itinPostal">ZIP</label><input id="itinPostal" name="postal" autocomplete="postal-code" required></div>
+              <textarea name="itinerary" hidden></textarea>
+              <button type="submit" class="btn btn-ghost btn-sm">Request mailed copy</button>
+            </form>
+            <p data-itinerary-status role="status"></p>
+          </div>
           <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
         </aside>
       </div>
@@ -446,6 +478,7 @@
 
 <script src="main.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer></script>
 <script src="area-map.js" defer></script>
 
 </body>
