@@ -119,4 +119,32 @@
     });
   });
 
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce){
+    document.querySelectorAll("[data-count]").forEach(function(el){
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if(isNaN(target)) return;
+      var start = 0;
+      var run = function(){
+        var t0 = null;
+        var dur = 900;
+        var step = function(ts){
+          if(!t0) t0 = ts;
+          var p = Math.min(1, (ts - t0) / dur);
+          el.textContent = String(Math.round(start + (target - start) * p));
+          if(p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      if("IntersectionObserver" in window){
+        var cio = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(entry.isIntersecting){ run(); cio.unobserve(el); }
+          });
+        }, { threshold: 0.4 });
+        cio.observe(el);
+      } else { run(); }
+    });
+  }
+
 })();
