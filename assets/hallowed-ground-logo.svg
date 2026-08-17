@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" role="img" aria-labelledby="title">
+  <title id="title">Hallowed Ground Battlefield Tours</title>
+  <rect width="520" height="160" rx="8" fill="#07111c"/>
+  <g transform="translate(36,32)" fill="none">
+    <circle cx="48" cy="48" r="46" stroke="#e0be72" stroke-width="3"/>
+    <path d="M48 6l8.4 42L48 90l-8.4-42z" fill="#e0be72"/>
+    <path d="M6 48l42-8.4L90 48l-42 8.4z" fill="#e0be72" opacity=".4"/>
+    <circle cx="48" cy="48" r="8.4" fill="#e0be72"/>
+  </g>
+  <text x="156" y="72" fill="#f7f1e3" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-weight="700" letter-spacing="0.04em">HALLOWED GROUND</text>
+  <text x="156" y="104" fill="#f0d9a0" font-family="ui-monospace, Consolas, monospace" font-size="13" letter-spacing="0.28em">BATTLEFIELD TOURS</text>
+</svg>

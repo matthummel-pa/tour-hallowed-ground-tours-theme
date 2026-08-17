@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Hallowed Ground compass mark">
+  <rect width="80" height="80" rx="40" fill="#07111c"/>
+  <g transform="translate(8,8)" fill="none">
+    <circle cx="32" cy="32" r="30.5" stroke="#e0be72" stroke-width="2"/>
+    <path d="M32 4l6.4 28L32 60l-6.4-28z" fill="#e0be72"/>
+    <path d="M4 32l28-6.4L60 32l-28 6.4z" fill="#e0be72" opacity=".4"/>
+    <circle cx="32" cy="32" r="5.2" fill="#e0be72"/>
+  </g>
+</svg>
