@@ -38,11 +38,13 @@ Reuse existing classes (`eyebrow`, `btn`, `btn-primary`, `tour-card`, `section-a
 
 Treat these as source of truth unless the user explicitly changes them. If you change one, update every page, JSON-LD, FAQ, and booking copy that repeats it.
 
-- Address: 271 Baltimore Street, Gettysburg, PA 17325
-- Phone: (717) 555-0271 / +17175550271
+- Address: 100 Sample Street, Gettysburg, PA 17325 (concept placeholder — not a live ticket office)
+- Phone: (717) 555-0100 / +17175550100 (555-01xx fiction range — not a live line)
 - Email: tours@hallowedground.test
-- Walking/bus meet: ticket office at 271 Baltimore Street
-- Lantern walk meet: flagpole on Lincoln Square
+- Walking/bus meet: sample ticket office at 100 Sample Street (label as concept — not a live storefront)
+- Lantern walk meet: sample downtown flagpole (concept). Tour copy may still name Lincoln Square as geography, not as a live business address.
+- Schema geo: coarse downtown centroid 39.83, -77.23 — not a street-level pin
+- Parking: generic downtown public lots and metered street parking. Do not pin a live office to Baltimore Street or name a specific garage as closest to the company.
 - Guides: Association of Licensed Battlefield Guides
 - Cancellation: full refund 24+ hours out; credit inside 24 hours; no-shows non-refundable
 - Demo canonical host: `https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/`

@@ -772,6 +772,16 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .meet-card h3{ font-size:1.05rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem; }
 .meet-card h3 svg{ color:var(--gold-500); flex-shrink:0; }
 .meet-card p, .meet-card address{ font-size:0.9rem; color:var(--color-ink-soft); }
+.nap-note{
+  display:block;
+  margin-top:0.25rem;
+  font-family:var(--font-mono);
+  font-size:0.68rem;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:rgba(247,241,227,0.48);
+}
+.meet-card .nap-note{ color:var(--color-ink-soft); opacity:0.85; text-transform:none; letter-spacing:0.02em; font-size:0.78rem; }
 
 /* Footer — sage: sections/footer.blade.php */
 .site-footer{
