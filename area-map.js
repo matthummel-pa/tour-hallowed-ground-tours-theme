@@ -237,10 +237,10 @@
     });
     map.addOverlay(overlay);
 
-    var overview = {
-      center: view.getCenter().slice(),
-      zoom: view.getZoom(),
-      rotation: view.getRotation()
+    var fieldView = {
+      center: ol.proj.fromLonLat([Number(cfg.center.lng), Number(cfg.center.lat)]),
+      zoom: cfg.zoom || 13.4,
+      rotation: cfg.rotation || 0
     };
     var zoomedIn = false;
 
@@ -248,15 +248,15 @@
       if (!zoomedIn) return;
       zoomedIn = false;
       if (reduce) {
-        view.setCenter(overview.center);
-        view.setZoom(overview.zoom);
-        view.setRotation(overview.rotation);
+        view.setCenter(fieldView.center);
+        view.setZoom(fieldView.zoom);
+        view.setRotation(fieldView.rotation);
         return;
       }
       view.animate({
-        center: overview.center,
-        zoom: overview.zoom,
-        rotation: overview.rotation,
+        center: fieldView.center,
+        zoom: fieldView.zoom,
+        rotation: fieldView.rotation,
         duration: 700
       });
     }
@@ -296,18 +296,8 @@
       pins.changed();
       highlight(document, id);
       fillDetail(detail, place);
-      if (fly !== false) {
-        if (!zoomedIn) {
-          overview = {
-            center: view.getCenter().slice(),
-            zoom: view.getZoom(),
-            rotation: view.getRotation()
-          };
-        }
-        showPopup(place);
-      } else {
-        hidePopup(false);
-      }
+      if (fly !== false) showPopup(place);
+      else hidePopup(false);
       if (fly !== false && isFinite(Number(place.lat)) && isFinite(Number(place.lng))) {
         var center = ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]);
         zoomedIn = true;
