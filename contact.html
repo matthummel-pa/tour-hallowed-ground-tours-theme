@@ -1,8 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1c29">
+<meta name="geo.region" content="US-PA">
+<meta name="geo.placename" content="Gettysburg, Pennsylvania">
+<meta name="geo.position" content="39.828;-77.231">
+<meta name="ICBM" content="39.828, -77.231">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml">
 <title>Contact &amp; FAQ | Hallowed Ground Battlefield Tours, Gettysburg</title>
 <meta name="description" content="Contact Hallowed Ground Battlefield Tours in Gettysburg, PA. Phone, email, address on Baltimore Street, office hours, and answers to frequently asked tour questions.">
 <link rel="canonical" href="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/contact.html">
@@ -10,10 +19,18 @@
 <meta property="og:title" content="Contact &amp; FAQ | Hallowed Ground Battlefield Tours, Gettysburg">
 <meta property="og:description" content="Contact Hallowed Ground Battlefield Tours in Gettysburg, PA. Phone, email, address on Baltimore Street, office hours, and answers to frequently asked tour questions.">
 <meta property="og:url" content="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/contact.html">
-<meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg/1280px-Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg">
+<meta property="og:image:alt" content="Gettysburg battlefield monument and cannon at sunrise">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Hallowed Ground Battlefield Tours">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact &amp; FAQ | Hallowed Ground Battlefield Tours, Gettysburg">
+<meta name="twitter:description" content="Contact Hallowed Ground Battlefield Tours in Gettysburg, PA. Phone, email, address on Baltimore Street, office hours, and answers to frequently asked tour questions.">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg/1280px-Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg">
+<link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script type="application/ld+json">
 {
@@ -22,7 +39,7 @@
   "@id": "https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/#business",
   "name": "Hallowed Ground Battlefield Tours",
   "url": "https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/contact.html",
-  "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg/1280px-Pennsylvania_-_Gettysburg_-_NARA_-_68148252_%28cropped%29.jpg",
   "description": "Licensed-guide walking, bus, and evening lantern tours of the Gettysburg battlefield in Gettysburg, Pennsylvania.",
   "telephone": "+17175550271",
   "email": "tours@hallowedground.test",
@@ -37,8 +54,8 @@
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 39.831,
-    "longitude": -77.228
+    "latitude": 39.828,
+    "longitude": -77.231
   },
   "openingHoursSpecification": [
     {
@@ -109,11 +126,10 @@
       "name": "Hanover, Pennsylvania"
     }
   ],
-  "sameAs": [
-    "https://www.facebook.com/",
-    "https://www.instagram.com/",
-    "https://www.tripadvisor.com/"
-  ]
+  "hasMap": "https://www.openstreetmap.org/?mlat=39.828&mlon=-77.231#map=17/39.828/-77.231",
+  "currenciesAccepted": "USD",
+  "paymentAccepted": "Cash, Credit Card",
+  "knowsLanguage": "en-US"
 }
 </script>
 <script type="application/ld+json">
@@ -290,6 +306,20 @@
               <label for="cEmail">Email address</label>
               <input type="email" id="cEmail" name="cEmail" autocomplete="email" required>
             </div>
+            <div class="field">
+              <label for="cPhone">Phone (optional)</label>
+              <input type="tel" id="cPhone" name="cPhone" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="cTopic">I am asking about</label>
+              <select id="cTopic" name="cTopic">
+                <option value="general">General question</option>
+                <option value="booking">An existing booking</option>
+                <option value="access">Accessibility</option>
+                <option value="group">School or group tour</option>
+                <option value="gift">Gift certificate</option>
+              </select>
+            </div>
             <div class="field full">
               <label for="cMsg">Message</label>
               <textarea id="cMsg" name="cMsg" required></textarea>
@@ -403,7 +433,10 @@
           <li><a href="guides.html">Our Guides</a></li>
           <li><a href="area.html">The Area</a></li>
           <li><a href="book.html">Book &amp; Pay</a></li>
+          <li><a href="groups.html">Groups &amp; Schools</a></li>
+          <li><a href="gift.html">Gift Certificates</a></li>
           <li><a href="contact.html">Contact &amp; FAQ</a></li>
+          <li><a href="accessibility.html">Accessibility</a></li>
         </ul>
       </div>
       <div>
@@ -413,6 +446,7 @@
           <li>Mon&ndash;Sun, 8:00 AM&ndash;6:00 PM</li>
           <li style="margin-top:0.5rem;"><b style="color:#fff;">Dec&ndash;Mar</b></li>
           <li>Thu&ndash;Sun, 9:00 AM&ndash;4:00 PM</li>
+          <li class="hours-live" data-hours-live></li>
         </ul>
       </div>
       <div>

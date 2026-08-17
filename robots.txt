@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/sitemap.xml
+Host: matthummel-pa.github.io

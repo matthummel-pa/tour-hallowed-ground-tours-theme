@@ -16,6 +16,12 @@ This repo is the source of truth for the working HTML demo. Push to `main` and G
 
 If the live URL 404s after the first push: **Settings → Pages → Deploy from a branch → `main` / (root)**.
 
+## WooCommerce WordPress theme
+
+The folder `wordpress/hallowed-ground/` is a installable theme. Copy it to `wp-content/themes/hallowed-ground/`, activate WooCommerce, then activate the theme. See `wordpress/hallowed-ground/README.md`.
+
+Tours are WooCommerce variable products (Adult / Child / Senior) with duration, group size, difficulty, and meeting-point fields. A preferred-date note is stored on the order. Pair with WooCommerce Bookings for live seat inventory.
+
 ## Source
 
 Copied from `web/app/themes/ridgesandvalleys-theme/concept/tour-hallowed-ground-tours/` in [matthummel-pa/ridgesandvalleys](https://github.com/matthummel-pa/ridgesandvalleys). Future updates belong here, not in the marketing site repo.
