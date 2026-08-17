@@ -1,6 +1,10 @@
 # Hallowed Ground Battlefield Tours
 
 <p align="center">
+  <img src="assets/hallowed-ground-logo.svg" alt="Hallowed Ground Battlefield Tours" width="420">
+</p>
+
+<p align="center">
   <strong>Concept marketing site</strong> for a licensed-guide tour company in Gettysburg, Pennsylvania.<br>
   Built in the browser as static HTML — designed so a later Sage / Roots / WooCommerce theme can pick up the same pages.
 </p>
@@ -205,6 +209,9 @@ cursor/<short-description>-c471
 
 ```
 tour-hallowed-ground-tours-theme/
+├── assets/
+│   ├── hallowed-ground-logo.svg   README lockup
+│   └── hallowed-ground-mark.svg   Compass mark
 ├── index.html          Home
 ├── tours.html          Catalog
 ├── guides.html         Guides
