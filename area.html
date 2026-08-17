@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About Gettysburg &amp; the Battlefield | Hallowed Ground Tours</title>
-<meta name="description" content="Your guide to Gettysburg, PA: the National Military Park, Little Round Top, Devil&#x27;s Den, Seminary &amp; Cemetery Ridge, parking, directions, and a sample ticket-office meeting point.">
+  <meta name="description" content="Interactive 3D field map of Gettysburg, PA: Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, parking, and a sample ticket-office meeting point.">
 <link rel="canonical" href="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="About Gettysburg &amp; the Battlefield | Hallowed Ground Tours">
-<meta property="og:description" content="Your guide to Gettysburg, PA: the National Military Park, Little Round Top, Devil&#x27;s Den, Seminary &amp; Cemetery Ridge, parking, directions, and a sample ticket-office meeting point.">
+<meta property="og:description" content="Interactive 3D field map of Gettysburg, PA: Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, parking, and a sample ticket-office meeting point.">
 <meta property="og:url" content="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -229,6 +229,30 @@
   </div>
 
 
+  <!-- sage:begin resources/views/sections/area-map.blade.php
+       Places: ACF options area_map_places or CPT area_place (title, blurb, category, x, z, elev, tour, visible)
+  -->
+  <section class="section" id="field-map">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">The Ground</span>
+        <h2>Ridges, hills, and downtown on one table.</h2>
+        <p>A top-down field diorama of the ground our tours cover. Click a pin for the place and the tour that walks it. Owners add, hide, or move pins in the demo admin — in Sage that becomes an ACF options panel.</p>
+      </div>
+      <div class="diorama-layout reveal">
+        <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive Gettysburg field diorama"></div>
+        <aside class="diorama-panel">
+          <div data-diorama-detail>
+            <p class="lede">Choose a pin on the table, or a place in the list, to see which tour covers that ground.</p>
+          </div>
+          <ul class="dio-place-list" data-diorama-list></ul>
+          <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <!-- sage:end sections/area-map.blade.php -->
+
   <section class="section">
     <div class="wrap">
       <div class="prose reveal">
@@ -375,6 +399,7 @@
           <li><a href="contact.html">Contact &amp; FAQ</a></li>
           <li><a href="contact.html#gifts">Gift certificates</a></li>
           <li><a href="contact.html#groups">Groups &amp; schools</a></li>
+          <li><a href="admin.html">Owner admin (demo)</a></li>
           <li><a href="contact.html">Accessibility</a></li>
         </ul>
       </div>
@@ -415,6 +440,7 @@
 </a>
 
 <script src="main.js" defer></script>
+<script src="area-map.js" defer></script>
 
 </body>
 </html>
