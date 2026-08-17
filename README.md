@@ -1,6 +1,26 @@
 # Hallowed Ground Battlefield Tours
 
 <p align="center">
+  <img src="assets/readme-menu/rail.svg" alt="Field dispatch · contents" width="720">
+</p>
+
+<p align="center">
+  <a href="#what-this-repo-is-for"><img src="assets/readme-menu/purpose.svg" alt="Purpose" height="42"></a>
+  <a href="#live-urls"><img src="assets/readme-menu/live-urls.svg" alt="Live URLs" height="42"></a>
+  <a href="#how-it-was-built"><img src="assets/readme-menu/how-built.svg" alt="How built" height="42"></a>
+  <a href="#features"><img src="assets/readme-menu/features.svg" alt="Features" height="42"></a>
+  <a href="#repo-map"><img src="assets/readme-menu/repo-map.svg" alt="Repo map" height="42"></a>
+  <a href="#git-workflow"><img src="assets/readme-menu/git.svg" alt="Git workflow" height="42"></a>
+</p>
+<p align="center">
+  <a href="#deployment"><img src="assets/readme-menu/deploy.svg" alt="Deployment" height="42"></a>
+  <a href="#github-settings-used-on-this-repo"><img src="assets/readme-menu/settings.svg" alt="GitHub settings" height="42"></a>
+  <a href="#cursor-setup-for-this-project"><img src="assets/readme-menu/cursor.svg" alt="Cursor setup" height="42"></a>
+  <a href="#concept-vs-later-wordpress"><img src="assets/readme-menu/wordpress.svg" alt="Concept vs WordPress" height="42"></a>
+  <a href="#license"><img src="assets/readme-menu/license.svg" alt="License" height="42"></a>
+</p>
+
+<p align="center">
   <img src="assets/hallowed-ground-logo.svg" alt="Hallowed Ground Battlefield Tours" width="420">
 </p>
 
@@ -37,6 +57,8 @@
 
 ---
 
+<a id="what-this-repo-is-for"></a>
+
 ## What this repo is for
 
 This is the **working HTML demo** for Hallowed Ground Battlefield Tours — a Gettysburg / Adams County company that sells small-group walking, bus, hike, lantern, and private sunrise tours led by Association of Licensed Battlefield Guides.
@@ -66,6 +88,8 @@ Schema geo: 39.83, −77.23 (coarse downtown, not a street pin)
 
 ---
 
+<a id="live-urls"></a>
+
 ## Live URLs
 
 ```mermaid
@@ -91,6 +115,8 @@ flowchart LR
 Canonical tags in the HTML still point at the GitHub Pages path so SEO stays on one origin until you choose otherwise.
 
 ---
+
+<a id="how-it-was-built"></a>
 
 ## How it was built
 
@@ -155,6 +181,8 @@ cursor/<short-description>-c471
 
 ---
 
+<a id="features"></a>
+
 ## Features
 
 ### Site
@@ -205,13 +233,16 @@ cursor/<short-description>-c471
 
 ---
 
+<a id="repo-map"></a>
+
 ## Repo map
 
 ```
 tour-hallowed-ground-tours-theme/
 ├── assets/
 │   ├── hallowed-ground-logo.svg   README lockup
-│   └── hallowed-ground-mark.svg   Compass mark
+│   ├── hallowed-ground-mark.svg   Compass mark
+│   └── readme-menu/               README section buttons
 ├── index.html          Home
 ├── tours.html          Catalog
 ├── guides.html         Guides
@@ -250,6 +281,8 @@ python3 scripts/build-monuments.py
 
 ---
 
+<a id="git-workflow"></a>
+
 ## Git workflow
 
 ```mermaid
@@ -278,6 +311,8 @@ git push -u origin cursor/my-change-c471
 ```
 
 ---
+
+<a id="deployment"></a>
 
 ## Deployment
 
@@ -324,6 +359,8 @@ The itinerary **mail** form uses `data-netlify="true"` (`name="itinerary-mail"`)
 Do not commit `.netlify/` (already gitignored).
 
 ---
+
+<a id="github-settings-used-on-this-repo"></a>
 
 ## GitHub settings used on this repo
 
@@ -374,6 +411,8 @@ None required for the static demo. Never put Netlify auth tokens or provider map
 
 ---
 
+<a id="cursor-setup-for-this-project"></a>
+
 ## Cursor setup for this project
 
 ```
@@ -393,6 +432,8 @@ Cloud Agents on this repo used a branch prefix `cursor/` and a run suffix so par
 
 ---
 
+<a id="concept-vs-later-wordpress"></a>
+
 ## Concept vs later WordPress
 
 Sage comments in the HTML (`sage:begin` / `sage:template`) mark where a Roots Sage theme would take over. The intended live stack is **Sage + WooCommerce**, with this demo as the front-end contract.
@@ -404,6 +445,8 @@ Until that theme ships:
 - Parking copy stays generic downtown lots — no fake loading zone.
 
 ---
+
+<a id="license"></a>
 
 ## License
 
