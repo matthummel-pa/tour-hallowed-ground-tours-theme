@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About Gettysburg &amp; the Battlefield | Hallowed Ground Tours</title>
-<meta name="description" content="Your guide to Gettysburg, PA: the National Military Park, Little Round Top, Devil&#x27;s Den, Seminary &amp; Cemetery Ridge, parking, directions, and the meeting point on Baltimore Street.">
+  <meta name="description" content="Interactive OpenLayers map of Gettysburg, PA: OpenStreetMap roads and buildings, Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, and a sample meeting point.">
 <link rel="canonical" href="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="About Gettysburg &amp; the Battlefield | Hallowed Ground Tours">
-<meta property="og:description" content="Your guide to Gettysburg, PA: the National Military Park, Little Round Top, Devil&#x27;s Den, Seminary &amp; Cemetery Ridge, parking, directions, and the meeting point on Baltimore Street.">
+<meta property="og:description" content="Interactive OpenLayers map of Gettysburg, PA: OpenStreetMap roads and buildings, Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, and a sample meeting point.">
 <meta property="og:url" content="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,500;1,6..72,650&amp;family=Atkinson+Hyperlegible:wght@400;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -24,12 +25,12 @@
   "url": "https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html",
   "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600",
   "description": "Licensed-guide walking, bus, and evening lantern tours of the Gettysburg battlefield in Gettysburg, Pennsylvania.",
-  "telephone": "+17175550271",
+  "telephone": "+17175550100",
   "email": "tours@hallowedground.test",
   "priceRange": "$$",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "271 Baltimore Street",
+    "streetAddress": "100 Sample Street",
     "addressLocality": "Gettysburg",
     "addressRegion": "PA",
     "postalCode": "17325",
@@ -37,8 +38,8 @@
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 39.826,
-    "longitude": -77.233
+    "latitude": 39.83,
+    "longitude": -77.23
   },
   "openingHoursSpecification": [
     {
@@ -137,22 +138,43 @@
 }
 </script>
 </head>
-<body>
+<body class="page page-area">
+<!-- sage:begin resources/views/sections/header.blade.php -->
 <a href="#main" class="skip-link">Skip to main content</a>
-<header class="site-header">
+<header class="site-header" role="banner">
+  <div class="header-rail">
+    <div class="wrap">
+      <span>Day tours · 100 Sample Street</span>
+      <span>Lantern walks · sample downtown flagpole</span>
+    </div>
+  </div>
   <div class="wrap header-inner">
     <a href="index.html" class="brand">
-      <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M2 26L10 12L15 19L20 9L32 26H2Z" fill="currentColor" opacity="0.9"/><circle cx="26" cy="7" r="3" fill="currentColor"/></svg>
+      <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18.5" stroke="currentColor" stroke-width="1.25"/><path d="M20 5l3.2 15L20 35l-3.2-15z" fill="currentColor"/><path d="M5 20l15-3.2L35 20l-15 3.2z" fill="currentColor" opacity=".4"/><circle cx="20" cy="20" r="3.2" fill="currentColor"/></svg>
       <span class="brand-text">
         <span class="brand-name">Hallowed Ground</span>
         <span class="brand-sub">Battlefield Tours</span>
       </span>
     </a>
     <nav class="main-nav" aria-label="Primary">
-      <ul><li><a href="index.html">Home</a></li><li><a href="tours.html">Tours</a></li><li><a href="guides.html">Our Guides</a></li><li><a href="area.html" class="is-active" aria-current="page">The Area</a></li><li><a href="contact.html">Contact</a></li></ul>
+      <ul>
+        <li class="has-sub">
+          <button type="button" class="nav-trigger" aria-expanded="false" aria-haspopup="true">Tours</button>
+          <div class="nav-panel" role="menu">
+            <a href="tours.html#historical" role="menuitem">Historical battlefield tours<small>Walking, bus, hike, and private sunrise</small></a>
+            <a href="tours.html#after-dark" role="menuitem">After-dark lantern walk<small>History after dark downtown — not a gimmick</small></a>
+            <a href="tours.html" role="menuitem">See all 5 tours<small>Filter by day field or evening</small></a>
+            <a href="contact.html#groups" role="menuitem">Groups &amp; schools<small>Families, reunions, and classrooms</small></a>
+            <a href="contact.html#gifts" role="menuitem">Gift certificates<small>WooCommerce product in the live theme</small></a>
+          </div>
+        </li>
+        <li><a href="guides.html">Guides</a></li>
+        <li><a href="area.html" class="is-active" aria-current="page">The Area</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </nav>
     <div class="header-actions">
-      <a href="tel:+17175550271" class="btn btn-ghost btn-sm" style="color:#fff;">(717) 555-0271</a>
+      <a href="tel:+17175550100" class="btn btn-ghost btn-sm header-phone">(717) 555-0100</a>
       <a href="book.html" class="btn btn-primary btn-sm">Book a Tour</a>
       <button type="button" class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -160,12 +182,21 @@
     </div>
   </div>
 </header>
-
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
-  <ul><li><a href="index.html">Home</a></li><li><a href="tours.html">Tours</a></li><li><a href="guides.html">Our Guides</a></li><li><a href="area.html" class="is-active" aria-current="page">The Area</a></li><li><a href="contact.html">Contact</a></li></ul>
-  <a href="tel:+17175550271" class="btn btn-outline btn-block" style="color:#fff;">Call (717) 555-0271</a>
-  <a href="book.html" class="btn btn-primary btn-block" style="margin-top:0.8rem;">Book a Tour</a>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="tours.html">All Tours</a></li>
+    <li class="sub"><a href="tours.html#historical">Historical tours</a></li>
+    <li class="sub"><a href="tours.html#after-dark">After-dark lantern walk</a></li>
+    <li><a href="guides.html">Our Guides</a></li>
+    <li><a href="area.html" class="is-active" aria-current="page">The Area</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="book.html">Book &amp; Pay</a></li>
+  </ul>
+  <a href="tel:+17175550100" class="btn btn-outline btn-block">Call (717) 555-0100</a>
+  <a href="book.html" class="btn btn-primary btn-block">Book a Tour</a>
 </nav>
+<!-- sage:end sections/header.blade.php -->
 
 <main id="main">
 <nav class="breadcrumb" aria-label="Breadcrumb"><div class="wrap"><ol><li><a href="index.html">Home</a></li><li class="sep" aria-hidden="true">/</li><li aria-current="page">The Area</li></ol></div></nav>
@@ -173,7 +204,7 @@
     <div class="wrap reveal">
       <span class="eyebrow">About Gettysburg &amp; the Area</span>
       <h1>Gettysburg, the battlefield &amp; how to find us</h1>
-      <p>Everything you need to plan a visit &mdash; the National Military Park, the ground our tours cover, where to meet us on 271 Baltimore Street, parking, driving directions, and the Adams County towns we serve.</p>
+      <p>Everything you need to plan a visit &mdash; the National Military Park, the ground our tours cover, where to meet us on 100 Sample Street, parking, driving directions, and the Adams County towns we serve.</p>
     </div>
   </section>
 
@@ -181,7 +212,7 @@
     <div class="wrap">
       <div class="info-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path d="M12 2a8 8 0 00-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 00-8-8z"/></svg>
-        271 Baltimore Street, Gettysburg, PA
+        100 Sample Street, Gettysburg, PA
       </div>
       <div class="info-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
@@ -193,11 +224,71 @@
       </div>
       <div class="info-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.902.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.908.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        (717) 555-0271
+        (717) 555-0100
       </div>
     </div>
   </div>
 
+
+  <!-- sage:begin resources/views/sections/area-map.blade.php
+       Places: ACF options area_map_places or CPT area_place (title, blurb, category, x, z, elev, tour, visible)
+  -->
+  <section class="section" id="field-map">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">The Ground</span>
+        <h2>The field, from the air.</h2>
+        <p>An OpenLayers map of Gettysburg, PA. Numbered gold circles are clusters — a 4 means four monuments sit on top of each other at this zoom; click to spread them. Filter monuments, tour locations, buildings, and popular ground. Switch to satellite for aerial tiles. Build a field itinerary and save it as a PDF, or ask us to mail a copy.</p>
+      </div>
+      <div class="diorama-layout reveal">
+        <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive OpenLayers map of Gettysburg"></div>
+        <aside class="diorama-panel">
+          <div data-diorama-detail>
+            <p class="lede">Click a cluster or pin. Popups carry the name, coordinates, and a public-domain photo when we have one.</p>
+          </div>
+          <fieldset class="map-filters" data-map-filters>
+            <legend>Show on the map</legend>
+            <label><input type="checkbox" data-filter="monument" checked> Monuments</label>
+            <label><input type="checkbox" data-filter="tour" checked> Tour locations</label>
+            <label><input type="checkbox" data-filter="building" checked> Significant buildings</label>
+            <label><input type="checkbox" data-filter="area" checked> Popular areas</label>
+          </fieldset>
+          <label class="dio-search-label" for="monument-search">Find a monument</label>
+          <input id="monument-search" class="dio-search" type="search" data-monument-search placeholder="Pennsylvania Memorial, 20th Maine…" autocomplete="off">
+          <div class="dio-place-list" data-monument-hits></div>
+          <p class="dio-list-kicker">Tour geography</p>
+          <ul class="dio-place-list" data-diorama-list></ul>
+          <div class="itinerary-card" data-itinerary>
+            <span class="eyebrow">Your field list</span>
+            <h3>Itinerary <span data-itinerary-count>0</span></h3>
+            <p class="lede" data-itinerary-empty>Add stops from a popup. Save a PDF on this device, print it, or ask us to mail a copy.</p>
+            <ol class="itin-list" data-itinerary-list></ol>
+            <div class="itin-actions">
+              <button type="button" class="btn btn-primary btn-sm" data-itinerary-pdf>Save as PDF</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-itinerary-print>Print</button>
+            </div>
+            <form class="itin-mail" name="itinerary-mail" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-itinerary-mail>
+              <input type="hidden" name="form-name" value="itinerary-mail">
+              <p class="hidden-honeypot"><label>Leave blank <input name="bot-field"></label></p>
+              <span class="eyebrow">Mail a copy</span>
+              <p>On Netlify this form is collected. On this concept host it opens an email to tours@hallowedground.test.</p>
+              <div class="field"><label for="itinName">Name</label><input id="itinName" name="guest_name" autocomplete="name" required></div>
+              <div class="field"><label for="itinEmail">Email</label><input id="itinEmail" name="email" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="itinStreet">Street</label><input id="itinStreet" name="street" autocomplete="street-address" required></div>
+              <div class="field"><label for="itinCity">City</label><input id="itinCity" name="city" autocomplete="address-level2" required></div>
+              <div class="field"><label for="itinRegion">State</label><input id="itinRegion" name="region" autocomplete="address-level1" required></div>
+              <div class="field"><label for="itinPostal">ZIP</label><input id="itinPostal" name="postal" autocomplete="postal-code" required></div>
+              <textarea name="itinerary" hidden></textarea>
+              <button type="submit" class="btn btn-ghost btn-sm">Request mailed copy</button>
+            </form>
+            <p data-itinerary-status role="status"></p>
+          </div>
+          <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <!-- sage:end sections/area-map.blade.php -->
 
   <section class="section">
     <div class="wrap">
@@ -213,19 +304,19 @@
         <p>At the southern end of the field, <strong>Little Round Top</strong> and <strong>Big Round Top</strong> command the high ground that Union forces fought desperately to hold on July 2. Just below them, the jumbled boulders of <strong>Devil's Den</strong> saw brutal close fighting. Our Little Round Top &amp; Devil's Den Hike climbs this rugged terrain with time to explore the rocks and take in the view sharpshooters once used.</p>
 
         <h3>Downtown, the Cemetery &amp; the David Wills House</h3>
-        <p>The story doesn't end on the field. <strong>Lincoln Square</strong>, the heart of downtown Gettysburg, sits just blocks from our office. The <strong>David Wills House</strong> on the square is where Abraham Lincoln finished the Gettysburg Address the night before delivering it at the dedication of the Soldiers' National Cemetery. Our evening Ghosts of Gettysburg Lantern Walk winds through these downtown streets after dark, pairing real wartime accounts with the buildings where they happened.</p>
+        <p>The story doesn't end on the field. <strong>Lincoln Square</strong> is the civic heart of downtown Gettysburg. The <strong>David Wills House</strong> on the square is where Abraham Lincoln finished the Gettysburg Address the night before delivering it at the dedication of the Soldiers' National Cemetery. Our evening Ghosts of Gettysburg Lantern Walk winds through these downtown streets after dark, pairing real wartime accounts with the buildings where they happened.</p>
 
         <h3>Where to meet us &amp; parking</h3>
-        <p>Our ticket office and day-tour meeting point is <strong>271 Baltimore Street, Gettysburg, PA 17325</strong>, a short walk from Lincoln Square, Steinwehr Avenue, and the National Military Park. There is a free 20-minute loading zone directly in front for check-in. For longer stays, all-day public lots and metered street parking are within a 2&ndash;5 minute walk, including the Racehorse Alley parking garage. Evening lantern walks meet at the <strong>Lincoln Square flagpole</strong> &mdash; look for your guide holding a lit lantern.</p>
+        <p>This concept uses a sample ticket office at <strong>100 Sample Street, Gettysburg, PA 17325</strong> &mdash; not a live storefront. Use downtown public lots and metered street parking near Lincoln Square. Evening lantern walks use a sample downtown meet at the <strong>Lincoln Square flagpole</strong> (tour geography) &mdash; look for your guide holding a lit lantern.</p>
 
         <h3>Driving directions</h3>
-        <p>From the north or south, take <strong>US-15</strong> to the Gettysburg exits, then follow Baltimore Street toward downtown. From the east or west, <strong>US-30 (York Street / Chambersburg Street / Lincoln Highway)</strong> leads straight into Lincoln Square; from the square, Baltimore Street runs south to our office. Most guests arriving from Harrisburg, York, Hanover, or the Maryland line reach us in well under an hour.</p>
+        <p>From the north or south, take <strong>US-15</strong> to the Gettysburg exits, then follow Baltimore Street toward downtown. From the east or west, <strong>US-30 (York Street / Chambersburg Street / Lincoln Highway)</strong> leads straight into Lincoln Square. Baltimore Street is a main downtown approach in this narrative, not a live office pin. Most guests arriving from Harrisburg, York, Hanover, or the Maryland line reach downtown in well under an hour.</p>
       </div>
 
       <div class="reveal" style="margin-top:2.4rem;">
         <span class="eyebrow">Nearby Towns We Serve</span>
         <h3 style="margin-block:0.4rem 0.6rem;">Adams County &amp; beyond</h3>
-        <p style="color:var(--color-ink-soft); max-width:60ch;">We welcome guests from Gettysburg and the surrounding Adams County communities. Approximate distances to our 271 Baltimore Street meeting point:</p>
+        <p style="color:var(--color-ink-soft); max-width:60ch;">We welcome guests from Gettysburg and the surrounding Adams County communities. Approximate distances to our 100 Sample Street meeting point:</p>
         <div class="town-grid">
         <div class="town-card"><b>Biglerville</b><span>~9 mi N &middot; US-15 & PA-34</span></div>
         <div class="town-card"><b>Littlestown</b><span>~10 mi SE &middot; PA-97</span></div>
@@ -253,15 +344,15 @@
         <div>
           <div class="meet-card">
             <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a8 8 0 00-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 00-8-8z"/><circle cx="12" cy="10" r="3"/></svg>Ticket Office &amp; Day Tour Meeting Point</h3>
-            <p>271 Baltimore Street, Gettysburg, PA 17325 &mdash; a short walk from Lincoln Square and the Gettysburg NMP Visitor Center. Free 20-minute loading zone out front; all-day lots within a 2&ndash;5 minute walk.</p>
+            <p>100 Sample Street, Gettysburg, PA 17325. Concept placeholder &mdash; not a live ticket office. Downtown public lots and metered parking sit near Lincoln Square.</p>
           </div>
           <div class="meet-card">
             <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Evening Lantern Walk Meeting Point</h3>
-            <p>Lincoln Square flagpole, downtown Gettysburg &mdash; a short walk from the ticket office. Look for your guide holding a lit lantern.</p>
+            <p>Sample downtown meet. Lincoln Square is tour geography, not a live business address. Look for your guide holding a lit lantern.</p>
           </div>
           <div class="meet-card">
             <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Office Hours</h3>
-            <p>Mon&ndash;Sun, 8:00 AM &ndash; 6:00 PM (April&ndash;November)<br>Thu&ndash;Sun, 9:00 AM &ndash; 4:00 PM (December&ndash;March)<br>Phone: <a href="tel:+17175550271" style="color:var(--slate-700); font-weight:600;">(717) 555-0271</a></p>
+            <p>Mon&ndash;Sun, 8:00 AM &ndash; 6:00 PM (April&ndash;November)<br>Thu&ndash;Sun, 9:00 AM &ndash; 4:00 PM (December&ndash;March)<br>Phone: <a href="tel:+17175550100" style="color:var(--gold-300); font-weight:600;">(717) 555-0100</a></p>
           </div>
         </div>
       </div>
@@ -298,12 +389,26 @@
   </section>
 </main>
 
-<footer class="site-footer">
+<!-- sage:begin resources/views/sections/footer.blade.php -->
+<footer class="site-footer" role="contentinfo">
   <div class="wrap">
+    <div class="footer-cta">
+      <div>
+        <span class="eyebrow">Field notes</span>
+        <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin:0.4rem 0 0.5rem;">Dates, weather calls, and new departures.</h2>
+        <p style="color:rgba(247,241,227,0.7);max-width:46ch;">A short list from 100 Sample Street. Demo only — maps to Mailchimp or WooCommerce follow-up in Sage.</p>
+        <p data-newsletter-note style="min-height:1.2em;font-size:0.82rem;color:var(--gold-300);margin-top:0.5rem;"></p>
+      </div>
+      <form class="newsletter" data-newsletter>
+        <label class="visually-hidden" for="nlEmail">Email</label>
+        <input id="nlEmail" name="EMAIL" type="email" autocomplete="email" placeholder="you@email.com" required>
+        <button class="btn btn-primary" type="submit">Join the list</button>
+      </form>
+    </div>
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="index.html" class="brand" style="color:#fff;">
-          <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M2 26L10 12L15 19L20 9L32 26H2Z" fill="currentColor" opacity="0.9"/><circle cx="26" cy="7" r="3" fill="currentColor"/></svg>
+        <a href="index.html" class="brand">
+          <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18.5" stroke="currentColor" stroke-width="1.25"/><path d="M20 5l3.2 15L20 35l-3.2-15z" fill="currentColor"/><path d="M5 20l15-3.2L35 20l-15 3.2z" fill="currentColor" opacity=".4"/><circle cx="20" cy="20" r="3.2" fill="currentColor"/></svg>
           <span class="brand-text"><span class="brand-name">Hallowed Ground</span><span class="brand-sub">Battlefield Tours</span></span>
         </a>
         <p>Licensed-guide battlefield tours in Gettysburg, PA. Walking, bus, and evening lantern experiences for individuals, families, and groups.</p>
@@ -318,27 +423,38 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="tours.html">All Tours</a></li>
+          <li><a href="tours.html#historical">Historical tours</a></li>
+          <li><a href="tours.html#after-dark">Lantern walk</a></li>
           <li><a href="guides.html">Our Guides</a></li>
           <li><a href="area.html">The Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Plan</h4>
+        <ul>
           <li><a href="book.html">Book &amp; Pay</a></li>
           <li><a href="contact.html">Contact &amp; FAQ</a></li>
+          <li><a href="contact.html#gifts">Gift certificates</a></li>
+          <li><a href="contact.html#groups">Groups &amp; schools</a></li>
+          <li><a href="admin.html">Owner admin (demo)</a></li>
+          <li><a href="contact.html">Accessibility</a></li>
         </ul>
       </div>
       <div>
         <h4>Hours</h4>
         <ul class="footer-hours">
-          <li><b style="color:#fff;">Apr&ndash;Nov</b></li>
-          <li>Mon&ndash;Sun, 8:00 AM&ndash;6:00 PM</li>
-          <li style="margin-top:0.5rem;"><b style="color:#fff;">Dec&ndash;Mar</b></li>
-          <li>Thu&ndash;Sun, 9:00 AM&ndash;4:00 PM</li>
+          <li><b style="color:#fff;">Apr–Nov</b></li>
+          <li>Mon–Sun, 8:00 AM–6:00 PM</li>
+          <li style="margin-top:0.5rem;"><b style="color:#fff;">Dec–Mar</b></li>
+          <li>Thu–Sun, 9:00 AM–4:00 PM</li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
           <li>Hallowed Ground Battlefield Tours</li>
-          <li>271 Baltimore Street<br>Gettysburg, PA 17325</li>
-          <li><a href="tel:+17175550271">(717) 555-0271</a></li>
+          <li>100 Sample Street<br>Gettysburg, PA 17325<br><span class="nap-note">Concept address — not a live office</span></li>
+          <li><a href="tel:+17175550100">(717) 555-0100</a><br><span class="nap-note">Fiction-range sample number</span></li>
           <li><a href="mailto:tours@hallowedground.test">tours@hallowedground.test</a></li>
         </ul>
       </div>
@@ -346,16 +462,24 @@
     <p class="footer-service">Proudly serving Gettysburg and the surrounding Adams County communities of Biglerville, Littlestown, New Oxford, McSherrystown, Fairfield, Cashtown, and Hanover.</p>
     <div class="footer-bottom">
       <span>&copy; <span data-year>2026</span> Hallowed Ground Battlefield Tours, Gettysburg PA. All rights reserved.</span>
-      <span>Design concept by Ridges &amp; Valleys Studio.</span>
+      <span>Design concept by Ridges &amp; Valleys Studio · Sage / Roots / WooCommerce starter markup</span>
     </div>
   </div>
 </footer>
+<div class="sticky-book">
+  <a href="tel:+17175550100" class="btn btn-outline btn-sm">Call</a>
+  <a href="book.html" class="btn btn-primary btn-sm">Book a Tour</a>
+</div>
+<!-- sage:end sections/footer.blade.php -->
 
 <a href="#" class="concept-badge" aria-label="This is a design concept by Ridges and Valleys Studio">
-  <span class="dot" aria-hidden="true"></span> Concept &middot; Ridges &amp; Valleys Studio
+  <span class="dot" aria-hidden="true"></span> Concept · Ridges &amp; Valleys Studio
 </a>
 
 <script src="main.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer></script>
+<script src="area-map.js" defer></script>
 
 </body>
 </html>

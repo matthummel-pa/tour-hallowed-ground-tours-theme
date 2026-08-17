@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,500;1,6..72,650&amp;family=Atkinson+Hyperlegible:wght@400;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script type="application/ld+json">
 {
@@ -24,12 +24,12 @@
   "url": "https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/book.html",
   "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600",
   "description": "Licensed-guide walking, bus, and evening lantern tours of the Gettysburg battlefield in Gettysburg, Pennsylvania.",
-  "telephone": "+17175550271",
+  "telephone": "+17175550100",
   "email": "tours@hallowedground.test",
   "priceRange": "$$",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "271 Baltimore Street",
+    "streetAddress": "100 Sample Street",
     "addressLocality": "Gettysburg",
     "addressRegion": "PA",
     "postalCode": "17325",
@@ -37,8 +37,8 @@
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 39.827,
-    "longitude": -77.232
+    "latitude": 39.83,
+    "longitude": -77.23
   },
   "openingHoursSpecification": [
     {
@@ -137,22 +137,43 @@
 }
 </script>
 </head>
-<body>
+<body class="page woocommerce-checkout">
+<!-- sage:begin resources/views/sections/header.blade.php -->
 <a href="#main" class="skip-link">Skip to main content</a>
-<header class="site-header">
+<header class="site-header" role="banner">
+  <div class="header-rail">
+    <div class="wrap">
+      <span>Day tours · 100 Sample Street</span>
+      <span>Lantern walks · sample downtown flagpole</span>
+    </div>
+  </div>
   <div class="wrap header-inner">
     <a href="index.html" class="brand">
-      <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M2 26L10 12L15 19L20 9L32 26H2Z" fill="currentColor" opacity="0.9"/><circle cx="26" cy="7" r="3" fill="currentColor"/></svg>
+      <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18.5" stroke="currentColor" stroke-width="1.25"/><path d="M20 5l3.2 15L20 35l-3.2-15z" fill="currentColor"/><path d="M5 20l15-3.2L35 20l-15 3.2z" fill="currentColor" opacity=".4"/><circle cx="20" cy="20" r="3.2" fill="currentColor"/></svg>
       <span class="brand-text">
         <span class="brand-name">Hallowed Ground</span>
         <span class="brand-sub">Battlefield Tours</span>
       </span>
     </a>
     <nav class="main-nav" aria-label="Primary">
-      <ul><li><a href="index.html">Home</a></li><li><a href="tours.html">Tours</a></li><li><a href="guides.html">Our Guides</a></li><li><a href="area.html">The Area</a></li><li><a href="contact.html">Contact</a></li></ul>
+      <ul>
+        <li class="has-sub">
+          <button type="button" class="nav-trigger" aria-expanded="false" aria-haspopup="true">Tours</button>
+          <div class="nav-panel" role="menu">
+            <a href="tours.html#historical" role="menuitem">Historical battlefield tours<small>Walking, bus, hike, and private sunrise</small></a>
+            <a href="tours.html#after-dark" role="menuitem">After-dark lantern walk<small>History after dark downtown — not a gimmick</small></a>
+            <a href="tours.html" role="menuitem">See all 5 tours<small>Filter by day field or evening</small></a>
+            <a href="contact.html#groups" role="menuitem">Groups &amp; schools<small>Families, reunions, and classrooms</small></a>
+            <a href="contact.html#gifts" role="menuitem">Gift certificates<small>WooCommerce product in the live theme</small></a>
+          </div>
+        </li>
+        <li><a href="guides.html">Guides</a></li>
+        <li><a href="area.html">The Area</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </nav>
     <div class="header-actions">
-      <a href="tel:+17175550271" class="btn btn-ghost btn-sm" style="color:#fff;">(717) 555-0271</a>
+      <a href="tel:+17175550100" class="btn btn-ghost btn-sm header-phone">(717) 555-0100</a>
       <a href="book.html" class="btn btn-primary btn-sm">Book a Tour</a>
       <button type="button" class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -160,12 +181,21 @@
     </div>
   </div>
 </header>
-
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
-  <ul><li><a href="index.html">Home</a></li><li><a href="tours.html">Tours</a></li><li><a href="guides.html">Our Guides</a></li><li><a href="area.html">The Area</a></li><li><a href="contact.html">Contact</a></li></ul>
-  <a href="tel:+17175550271" class="btn btn-outline btn-block" style="color:#fff;">Call (717) 555-0271</a>
-  <a href="book.html" class="btn btn-primary btn-block" style="margin-top:0.8rem;">Book a Tour</a>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="tours.html">All Tours</a></li>
+    <li class="sub"><a href="tours.html#historical">Historical tours</a></li>
+    <li class="sub"><a href="tours.html#after-dark">After-dark lantern walk</a></li>
+    <li><a href="guides.html">Our Guides</a></li>
+    <li><a href="area.html">The Area</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="book.html">Book &amp; Pay</a></li>
+  </ul>
+  <a href="tel:+17175550100" class="btn btn-outline btn-block">Call (717) 555-0100</a>
+  <a href="book.html" class="btn btn-primary btn-block">Book a Tour</a>
 </nav>
+<!-- sage:end sections/header.blade.php -->
 
 <main id="main">
 <nav class="breadcrumb" aria-label="Breadcrumb"><div class="wrap"><ol><li><a href="index.html">Home</a></li><li class="sep" aria-hidden="true">/</li><li aria-current="page">Book &amp; Pay</li></ol></div></nav>
@@ -173,13 +203,13 @@
     <div class="wrap reveal">
       <span class="eyebrow">Book &amp; Pay</span>
       <h1>Book your Gettysburg battlefield tour</h1>
-      <p>Reserve your spot in about three minutes. Pick a tour, choose a date, add tickets, and check out. You'll get a confirmation with your ticket number and meeting-point directions to 271 Baltimore Street, Gettysburg.</p>
+      <p>Reserve your spot in about three minutes. Pick a tour, choose a date, add tickets, and check out. You'll get a confirmation with your ticket number and meeting-point directions to 100 Sample Street, Gettysburg.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap">
-      <div class="booking-inline" id="bookingFlow">
+      <div class="booking-inline woocommerce" id="bookingFlow" data-sage="woocommerce/checkout/form-checkout.php">
         <div class="modal-head">
           <h2 id="modalTitle">Book Your Tour</h2>
           <span class="demo-flag" style="margin:0;">Demo &mdash; no real payment is processed</span>
@@ -239,15 +269,15 @@
             <div class="step-label">Step 4 of 5</div>
             <h3 class="step-title">Order summary &amp; checkout</h3>
             <div class="summary-card" id="summaryCard"></div>
-            <form id="checkoutForm" novalidate>
+            <form id="checkoutForm" class="checkout woocommerce-checkout" novalidate>
               <div class="form-grid">
                 <div class="field full">
                   <label for="ccName">Full name</label>
-                  <input type="text" id="ccName" name="ccName" autocomplete="name" required>
+                  <input type="text" id="ccName" name="billing_first_name" autocomplete="name" required>
                 </div>
                 <div class="field full">
                   <label for="ccEmail">Email address</label>
-                  <input type="email" id="ccEmail" name="ccEmail" autocomplete="email" required>
+                  <input type="email" id="ccEmail" name="billing_email" autocomplete="email" required>
                 </div>
                 <div class="field full">
                   <span class="demo-flag">Demo &mdash; no real payment is processed</span>
@@ -313,7 +343,7 @@
         <div class="expect-card">
           <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a8 8 0 00-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 00-8-8z"/><circle cx="12" cy="10" r="3"/></svg></div>
           <h3>Where to meet</h3>
-          <p>Day tours check in at our ticket office, 271 Baltimore Street, Gettysburg, PA 17325. Evening lantern walks meet at the Lincoln Square flagpole downtown.</p>
+          <p>Day tours check in at a sample ticket office, 100 Sample Street, Gettysburg, PA 17325 — not a live storefront. Evening lantern walks use a sample downtown meet at the Lincoln Square flagpole.</p>
         </div>
         <div class="expect-card">
           <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
@@ -323,19 +353,33 @@
         <div class="expect-card">
           <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.902.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.908.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
           <h3>Need help?</h3>
-          <p>Prefer to book by phone, or planning a group of 10+? Call (717) 555-0271 or email <a href="mailto:tours@hallowedground.test" style="color:var(--slate-700); font-weight:600;">tours@hallowedground.test</a>.</p>
+          <p>Prefer to book by phone, or planning a group of 10+? Call (717) 555-0100 or email <a href="mailto:tours@hallowedground.test" style="color:var(--gold-300); font-weight:600;">tours@hallowedground.test</a>.</p>
         </div>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
+<!-- sage:begin resources/views/sections/footer.blade.php -->
+<footer class="site-footer" role="contentinfo">
   <div class="wrap">
+    <div class="footer-cta">
+      <div>
+        <span class="eyebrow">Field notes</span>
+        <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin:0.4rem 0 0.5rem;">Dates, weather calls, and new departures.</h2>
+        <p style="color:rgba(247,241,227,0.7);max-width:46ch;">A short list from 100 Sample Street. Demo only — maps to Mailchimp or WooCommerce follow-up in Sage.</p>
+        <p data-newsletter-note style="min-height:1.2em;font-size:0.82rem;color:var(--gold-300);margin-top:0.5rem;"></p>
+      </div>
+      <form class="newsletter" data-newsletter>
+        <label class="visually-hidden" for="nlEmail">Email</label>
+        <input id="nlEmail" name="EMAIL" type="email" autocomplete="email" placeholder="you@email.com" required>
+        <button class="btn btn-primary" type="submit">Join the list</button>
+      </form>
+    </div>
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="index.html" class="brand" style="color:#fff;">
-          <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M2 26L10 12L15 19L20 9L32 26H2Z" fill="currentColor" opacity="0.9"/><circle cx="26" cy="7" r="3" fill="currentColor"/></svg>
+        <a href="index.html" class="brand">
+          <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18.5" stroke="currentColor" stroke-width="1.25"/><path d="M20 5l3.2 15L20 35l-3.2-15z" fill="currentColor"/><path d="M5 20l15-3.2L35 20l-15 3.2z" fill="currentColor" opacity=".4"/><circle cx="20" cy="20" r="3.2" fill="currentColor"/></svg>
           <span class="brand-text"><span class="brand-name">Hallowed Ground</span><span class="brand-sub">Battlefield Tours</span></span>
         </a>
         <p>Licensed-guide battlefield tours in Gettysburg, PA. Walking, bus, and evening lantern experiences for individuals, families, and groups.</p>
@@ -350,27 +394,37 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="tours.html">All Tours</a></li>
+          <li><a href="tours.html#historical">Historical tours</a></li>
+          <li><a href="tours.html#after-dark">Lantern walk</a></li>
           <li><a href="guides.html">Our Guides</a></li>
           <li><a href="area.html">The Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Plan</h4>
+        <ul>
           <li><a href="book.html">Book &amp; Pay</a></li>
           <li><a href="contact.html">Contact &amp; FAQ</a></li>
+          <li><a href="contact.html#gifts">Gift certificates</a></li>
+          <li><a href="contact.html#groups">Groups &amp; schools</a></li>
+          <li><a href="contact.html">Accessibility</a></li>
         </ul>
       </div>
       <div>
         <h4>Hours</h4>
         <ul class="footer-hours">
-          <li><b style="color:#fff;">Apr&ndash;Nov</b></li>
-          <li>Mon&ndash;Sun, 8:00 AM&ndash;6:00 PM</li>
-          <li style="margin-top:0.5rem;"><b style="color:#fff;">Dec&ndash;Mar</b></li>
-          <li>Thu&ndash;Sun, 9:00 AM&ndash;4:00 PM</li>
+          <li><b style="color:#fff;">Apr–Nov</b></li>
+          <li>Mon–Sun, 8:00 AM–6:00 PM</li>
+          <li style="margin-top:0.5rem;"><b style="color:#fff;">Dec–Mar</b></li>
+          <li>Thu–Sun, 9:00 AM–4:00 PM</li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
           <li>Hallowed Ground Battlefield Tours</li>
-          <li>271 Baltimore Street<br>Gettysburg, PA 17325</li>
-          <li><a href="tel:+17175550271">(717) 555-0271</a></li>
+          <li>100 Sample Street<br>Gettysburg, PA 17325<br><span class="nap-note">Concept address — not a live office</span></li>
+          <li><a href="tel:+17175550100">(717) 555-0100</a><br><span class="nap-note">Fiction-range sample number</span></li>
           <li><a href="mailto:tours@hallowedground.test">tours@hallowedground.test</a></li>
         </ul>
       </div>
@@ -378,13 +432,18 @@
     <p class="footer-service">Proudly serving Gettysburg and the surrounding Adams County communities of Biglerville, Littlestown, New Oxford, McSherrystown, Fairfield, Cashtown, and Hanover.</p>
     <div class="footer-bottom">
       <span>&copy; <span data-year>2026</span> Hallowed Ground Battlefield Tours, Gettysburg PA. All rights reserved.</span>
-      <span>Design concept by Ridges &amp; Valleys Studio.</span>
+      <span>Design concept by Ridges &amp; Valleys Studio · Sage / Roots / WooCommerce starter markup</span>
     </div>
   </div>
 </footer>
+<div class="sticky-book">
+  <a href="tel:+17175550100" class="btn btn-outline btn-sm">Call</a>
+  <a href="book.html" class="btn btn-primary btn-sm">Book a Tour</a>
+</div>
+<!-- sage:end sections/footer.blade.php -->
 
 <a href="#" class="concept-badge" aria-label="This is a design concept by Ridges and Valleys Studio">
-  <span class="dot" aria-hidden="true"></span> Concept &middot; Ridges &amp; Valleys Studio
+  <span class="dot" aria-hidden="true"></span> Concept · Ridges &amp; Valleys Studio
 </a>
 
 <script src="main.js" defer></script>

@@ -1,13 +1,11 @@
-/* Global behaviors — Hallowed Ground Battlefield Tours
-   (hamburger menu, scroll reveal, header shadow, current year, FAQ accordion) */
+/* Global behaviors — Hallowed Ground
+   hamburger, mega-nav, scroll reveal, FAQ, tour filters, newsletter demo */
 (function(){
   "use strict";
 
-  /* Current year */
   var yr = String(new Date().getFullYear());
   document.querySelectorAll("[data-year]").forEach(function(el){ el.textContent = yr; });
 
-  /* Header shadow on scroll */
   var header = document.querySelector(".site-header");
   if(header){
     var onScroll = function(){
@@ -18,23 +16,34 @@
     window.addEventListener("scroll", onScroll, { passive:true });
   }
 
-  /* Mobile nav */
   var hamburgerBtn = document.getElementById("hamburgerBtn");
   var mobileNav = document.getElementById("mobileNav");
   if(hamburgerBtn && mobileNav){
     var closeMobileNav = function(){
       mobileNav.classList.remove("is-open");
       hamburgerBtn.setAttribute("aria-expanded","false");
+      hamburgerBtn.setAttribute("aria-label","Open menu");
+      document.body.classList.remove("modal-locked");
     };
     hamburgerBtn.addEventListener("click", function(){
       var open = mobileNav.classList.toggle("is-open");
       hamburgerBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      hamburgerBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      document.body.classList.toggle("modal-locked", open);
     });
     mobileNav.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", closeMobileNav); });
     document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeMobileNav(); });
   }
 
-  /* Reveal on scroll */
+  document.querySelectorAll(".has-sub").forEach(function(item){
+    var trigger = item.querySelector(".nav-trigger");
+    if(!trigger) return;
+    trigger.addEventListener("click", function(){
+      var open = item.classList.toggle("is-open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
+
   var revealEls = document.querySelectorAll(".reveal");
   if("IntersectionObserver" in window){
     var io = new IntersectionObserver(function(entries){
@@ -50,7 +59,6 @@
     revealEls.forEach(function(el){ el.classList.add("is-visible"); });
   }
 
-  /* FAQ accordion */
   document.querySelectorAll(".faq-item").forEach(function(item){
     var btn = item.querySelector(".faq-q");
     var panel = item.querySelector(".faq-a");
@@ -77,5 +85,66 @@
       }
     });
   });
+
+  var filterBar = document.querySelector("[data-tour-filter]");
+  if(filterBar){
+    var cards = document.querySelectorAll("[data-category]");
+    var applyFilter = function(val){
+      filterBar.querySelectorAll("button").forEach(function(b){
+        b.setAttribute("aria-pressed", b.getAttribute("data-filter") === val ? "true" : "false");
+      });
+      cards.forEach(function(card){
+        var show = val === "all" || card.getAttribute("data-category") === val;
+        card.classList.toggle("is-hidden", !show);
+      });
+    };
+    filterBar.querySelectorAll("button").forEach(function(btn){
+      btn.addEventListener("click", function(){ applyFilter(btn.getAttribute("data-filter")); });
+    });
+    var hash = (window.location.hash || "").replace("#","");
+    if(hash === "after-dark" || hash === "historical") applyFilter(hash);
+  }
+
+  document.querySelectorAll("[data-newsletter]").forEach(function(form){
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      var input = form.querySelector("input[type=email]");
+      var note = form.querySelector("[data-newsletter-note]") || (form.parentElement && form.parentElement.querySelector("[data-newsletter-note]"));
+      if(!input || !input.value.trim()){
+        if(note) note.textContent = "Add an email to join the field notes list.";
+        return;
+      }
+      if(note) note.textContent = "This concept demo does not send email. On WordPress this maps to a Mailchimp / WooCommerce follow-up.";
+      form.reset();
+    });
+  });
+
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce){
+    document.querySelectorAll("[data-count]").forEach(function(el){
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if(isNaN(target)) return;
+      var start = 0;
+      var run = function(){
+        var t0 = null;
+        var dur = 900;
+        var step = function(ts){
+          if(!t0) t0 = ts;
+          var p = Math.min(1, (ts - t0) / dur);
+          el.textContent = String(Math.round(start + (target - start) * p));
+          if(p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      if("IntersectionObserver" in window){
+        var cio = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(entry.isIntersecting){ run(); cio.unobserve(el); }
+          });
+        }, { threshold: 0.4 });
+        cio.observe(el);
+      } else { run(); }
+    });
+  }
 
 })();
