@@ -5,22 +5,33 @@
   "use strict";
 
   var STORAGE = "hg-area-map-v1";
+  var MAPS_STORAGE = "hg-maps-config-v1";
   var ADMIN_GATE = "hg-area-admin";
+  var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a" };
+  var DEFAULT_MAPS = {
+    apiKey: "",
+    mapId: "",
+    center: { lat: 39.812, lng: -77.236, altitude: 40 },
+    tilt: 58,
+    heading: 20,
+    range: 3800,
+    mode: "HYBRID"
+  };
 
   var DEFAULTS = {
     version: 1,
     places: [
-      { id: "lincoln-square", title: "Lincoln Square", blurb: "The civic heart of downtown Gettysburg. The lantern walk uses a sample downtown meet at the flagpole — tour geography, not a live business address.", category: "downtown", tourHref: "tours.html#after-dark", tourLabel: "Ghosts of Gettysburg Lantern Walk", x: 68, z: 16, elev: 28, visible: true },
-      { id: "david-wills-house", title: "David Wills House", blurb: "On the square, where Lincoln finished the Gettysburg Address the night before the cemetery dedication.", category: "downtown", tourHref: "tours.html#after-dark", tourLabel: "Ghosts of Gettysburg Lantern Walk", x: 71, z: 19, elev: 26, visible: true },
-      { id: "sample-office", title: "Sample ticket office", blurb: "100 Sample Street — concept placeholder, not a live storefront. Day walking and bus tours in this demo check in here.", category: "meet", tourHref: "book.html", tourLabel: "Book a tour", x: 74, z: 24, elev: 24, visible: true },
-      { id: "national-cemetery", title: "Soldiers' National Cemetery", blurb: "South of the square. The dedication ground of the Address, on the rise that became Cemetery Hill.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", x: 62, z: 30, elev: 22, visible: true },
-      { id: "mcpherson-ridge", title: "McPherson Ridge", blurb: "Northwest of town. First-day ground: the opening fight on July 1, walked on the Highlights tour.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", x: 34, z: 22, elev: 18, visible: true },
-      { id: "seminary-ridge", title: "Seminary Ridge", blurb: "The long western ridge. Confederate line after July 1, marked by the seminary cupola.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", x: 24, z: 48, elev: 20, visible: true },
-      { id: "cemetery-ridge", title: "Cemetery Ridge", blurb: "The Union fishhook. Walking tours cross this ridge to tie all three days into one story.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", x: 54, z: 50, elev: 22, visible: true },
-      { id: "high-water-mark", title: "High Water Mark", blurb: "The Copse of Trees on Cemetery Ridge — the farthest reach of Pickett's Charge on July 3.", category: "ridge", tourHref: "tours.html", tourLabel: "Pickett's Charge Deluxe Bus Tour", x: 52, z: 56, elev: 24, visible: true },
-      { id: "devils-den", title: "Devil's Den", blurb: "Jumbled boulders at the south end of the field. Close fighting on July 2, walked on the hike.", category: "hike", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", x: 46, z: 78, elev: 16, visible: true },
-      { id: "little-round-top", title: "Little Round Top", blurb: "The rocky hill Union forces fought to hold on July 2. The hike climbs this ground.", category: "hill", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", x: 58, z: 80, elev: 36, visible: true },
-      { id: "big-round-top", title: "Big Round Top", blurb: "The wooded height just south of Little Round Top, commanding the southern end of the field.", category: "hill", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", x: 66, z: 86, elev: 40, visible: true }
+      { id: "lincoln-square", title: "Lincoln Square", blurb: "The civic heart of downtown Gettysburg. The lantern walk uses a sample downtown meet at the flagpole — tour geography, not a live business address.", category: "downtown", tourHref: "tours.html#after-dark", tourLabel: "Ghosts of Gettysburg Lantern Walk", lat: 39.83092, lng: -77.23114, x: 68, z: 16, elev: 28, visible: true },
+      { id: "david-wills-house", title: "David Wills House", blurb: "On the square, where Lincoln finished the Gettysburg Address the night before the cemetery dedication.", category: "downtown", tourHref: "tours.html#after-dark", tourLabel: "Ghosts of Gettysburg Lantern Walk", lat: 39.83055, lng: -77.23095, x: 71, z: 19, elev: 26, visible: true },
+      { id: "sample-office", title: "Sample ticket office", blurb: "100 Sample Street — concept placeholder, not a live storefront. Day walking and bus tours in this demo check in here.", category: "meet", tourHref: "book.html", tourLabel: "Book a tour", lat: 39.8292, lng: -77.2314, x: 74, z: 24, elev: 24, visible: true },
+      { id: "national-cemetery", title: "Soldiers' National Cemetery", blurb: "South of the square. The dedication ground of the Address, on the rise that became Cemetery Hill.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", lat: 39.82155, lng: -77.23135, x: 62, z: 30, elev: 22, visible: true },
+      { id: "mcpherson-ridge", title: "McPherson Ridge", blurb: "Northwest of town. First-day ground: the opening fight on July 1, walked on the Highlights tour.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", lat: 39.8385, lng: -77.2508, x: 34, z: 22, elev: 18, visible: true },
+      { id: "seminary-ridge", title: "Seminary Ridge", blurb: "The long western ridge. Confederate line after July 1, marked by the seminary cupola.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", lat: 39.8198, lng: -77.2448, x: 24, z: 48, elev: 20, visible: true },
+      { id: "cemetery-ridge", title: "Cemetery Ridge", blurb: "The Union fishhook. Walking tours cross this ridge to tie all three days into one story.", category: "ridge", tourHref: "tours.html#historical", tourLabel: "Battlefield Highlights Walking Tour", lat: 39.8138, lng: -77.2348, x: 54, z: 50, elev: 22, visible: true },
+      { id: "high-water-mark", title: "High Water Mark", blurb: "The Copse of Trees on Cemetery Ridge — the farthest reach of Pickett's Charge on July 3.", category: "ridge", tourHref: "tours.html", tourLabel: "Pickett's Charge Deluxe Bus Tour", lat: 39.81248, lng: -77.23555, x: 52, z: 56, elev: 24, visible: true },
+      { id: "devils-den", title: "Devil's Den", blurb: "Jumbled boulders at the south end of the field. Close fighting on July 2, walked on the hike.", category: "hike", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", lat: 39.7915, lng: -77.2424, x: 46, z: 78, elev: 16, visible: true },
+      { id: "little-round-top", title: "Little Round Top", blurb: "The rocky hill Union forces fought to hold on July 2. The hike climbs this ground.", category: "hill", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", lat: 39.7914, lng: -77.237, x: 58, z: 80, elev: 36, visible: true },
+      { id: "big-round-top", title: "Big Round Top", blurb: "The wooded height just south of Little Round Top, commanding the southern end of the field.", category: "hill", tourHref: "tours.html", tourLabel: "Little Round Top & Devil's Den Hike", lat: 39.7872, lng: -77.2378, x: 66, z: 86, elev: 40, visible: true }
     ]
   };
 
@@ -42,16 +53,252 @@
     localStorage.setItem(STORAGE, JSON.stringify({ version: 1, places: places }));
   }
 
+  function readMapsStored() {
+    try {
+      var raw = localStorage.getItem(MAPS_STORAGE);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") return parsed;
+    } catch (err) { /* ignore */ }
+    return null;
+  }
+
+  function writeMapsStored(cfg) {
+    var copy = JSON.parse(JSON.stringify(cfg || {}));
+    localStorage.setItem(MAPS_STORAGE, JSON.stringify(copy));
+  }
+
+  function mergeMaps(base, extra) {
+    var out = JSON.parse(JSON.stringify(base || DEFAULT_MAPS));
+    extra = extra || {};
+    Object.keys(extra).forEach(function (k) {
+      if (k === "center" && extra.center) {
+        out.center = Object.assign({}, out.center, extra.center);
+      } else if (extra[k] !== undefined && extra[k] !== null && extra[k] !== "") {
+        out[k] = extra[k];
+      }
+    });
+    return out;
+  }
+
+  function loadMapsConfig(done) {
+    var stored = readMapsStored();
+    fetch("data/maps-config.json", { cache: "no-store" })
+      .then(function (res) { return res.ok ? res.json() : {}; })
+      .then(function (fileCfg) {
+        var cfg = mergeMaps(DEFAULT_MAPS, fileCfg);
+        cfg = mergeMaps(cfg, stored);
+        if (!cfg.apiKey && window.HG_GOOGLE_MAPS_KEY) cfg.apiKey = window.HG_GOOGLE_MAPS_KEY;
+        done(cfg);
+      })
+      .catch(function () {
+        var cfg = mergeMaps(DEFAULT_MAPS, stored);
+        if (!cfg.apiKey && window.HG_GOOGLE_MAPS_KEY) cfg.apiKey = window.HG_GOOGLE_MAPS_KEY;
+        done(cfg);
+      });
+  }
+
+  var mapsBootstrapped = false;
+  function bootstrapMaps(apiKey) {
+    if (window.google && google.maps && google.maps.importLibrary) {
+      return google.maps.importLibrary("maps3d");
+    }
+    if (mapsBootstrapped) {
+      return google.maps.importLibrary("maps3d");
+    }
+    mapsBootstrapped = true;
+    (function (g) {
+      var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
+      b = b[c] || (b[c] = {});
+      var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams(), u = function () {
+        return h || (h = new Promise(async function (f, n) {
+          await (a = m.createElement("script"));
+          e.set("libraries", [...r] + "");
+          for (k in g) e.set(k.replace(/[A-Z]/g, function (t) { return "_" + t[0].toLowerCase(); }), g[k]);
+          e.set("callback", c + ".maps." + q);
+          a.src = "https://maps.googleapis.com/maps/api/js?" + e;
+          d[q] = f;
+          a.onerror = function () { h = n(Error(p + " could not load.")); };
+          m.head.append(a);
+        }));
+      };
+      d[l] ? console.warn(p + " only loads once.") : d[l] = function (f) {
+        r.add(f);
+        return u().then(function () { return d[l](f); });
+      };
+    })({ key: apiKey, v: "beta" });
+    return google.maps.importLibrary("maps3d");
+  }
+
+  function cameraFor(place, cfg, close) {
+    var lat = Number(place && place.lat);
+    var lng = Number(place && place.lng);
+    if (!isFinite(lat) || !isFinite(lng)) {
+      lat = cfg.center.lat;
+      lng = cfg.center.lng;
+    }
+    return {
+      center: { lat: lat, lng: lng, altitude: close ? 30 : (cfg.center.altitude || 40) },
+      tilt: cfg.tilt,
+      heading: cfg.heading,
+      range: close ? 900 : cfg.range
+    };
+  }
+
+  function fillList(places, opts) {
+    var list = document.querySelector("[data-diorama-list]");
+    var visible = places.filter(function (p) { return p.visible !== false; });
+    if (!list) return visible;
+    list.innerHTML = "";
+    visible.forEach(function (place) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("data-id", place.id);
+      b.innerHTML = "<b>" + esc(place.title) + "</b><span>" + esc(catLabel(place.category)) + "</span>";
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    if (!list.dataset.selectBound) {
+      list.dataset.selectBound = "1";
+      list.addEventListener("click", function (e) {
+        var btn = e.target.closest("button[data-id]");
+        var host = document.querySelector("[data-diorama]");
+        if (btn && host && host._hgSelect) host._hgSelect(btn.getAttribute("data-id"));
+      });
+    }
+    return visible;
+  }
+
+  function mountGoogle(stage, places, opts, cfg, done) {
+    opts = opts || {};
+    stage.classList.add("is-google");
+    stage.innerHTML = "<div class=\"gmp-host\" data-gmp-host></div><p class=\"dio-hint\">Real Gettysburg roads and buildings from Google Maps 3D (HYBRID). Drag to orbit. Click a pin or the list.</p>";
+    var host = stage.querySelector("[data-gmp-host]");
+    var detail = document.querySelector("[data-diorama-detail]");
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    bootstrapMaps(cfg.apiKey).then(function (lib) {
+      return google.maps.importLibrary("marker").then(function (markerLib) {
+        return { lib: lib, PinElement: markerLib && markerLib.PinElement };
+      }).catch(function () {
+        return { lib: lib, PinElement: null };
+      });
+    }).then(function (pack) {
+      var lib = pack.lib;
+      var PinElement = pack.PinElement;
+      var Map3DElement = lib.Map3DElement;
+      var MapMode = lib.MapMode;
+      var Marker3DInteractiveElement = lib.Marker3DInteractiveElement;
+      var map = new Map3DElement({
+        center: cfg.center,
+        range: cfg.range,
+        tilt: cfg.tilt,
+        heading: cfg.heading,
+        mode: (MapMode && MapMode[cfg.mode]) || cfg.mode || "HYBRID"
+      });
+      try { map.defaultUIHidden = true; } catch (err) { /* older preview builds */ }
+      if (cfg.mapId) map.mapId = cfg.mapId;
+      host.appendChild(map);
+      stage._gmap = map;
+      stage._gmarkers = [];
+
+      var select = function (id, fly) {
+        var place = places.filter(function (p) { return p.id === id; })[0];
+        if (!place) return;
+        highlight(document, id);
+        fillDetail(detail, place);
+        if (fly !== false && map.flyCameraTo && !reduce) {
+          map.flyCameraTo({ endCamera: cameraFor(place, cfg, true), durationMillis: 1400 });
+        } else if (fly !== false) {
+          var cam = cameraFor(place, cfg, true);
+          map.center = cam.center;
+          map.range = cam.range;
+          map.tilt = cam.tilt;
+          map.heading = cam.heading;
+        }
+        if (opts.onSelect) opts.onSelect(place);
+      };
+
+      var skipMapClick = false;
+      function syncMarkers(nextPlaces) {
+        places = nextPlaces;
+        (stage._gmarkers || []).forEach(function (m) { if (m.remove) m.remove(); });
+        stage._gmarkers = [];
+        var visible = fillList(places, opts);
+        visible.forEach(function (place) {
+          if (!isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) return;
+          var marker = new Marker3DInteractiveElement({
+            position: { lat: Number(place.lat), lng: Number(place.lng), altitude: 8 },
+            altitudeMode: "RELATIVE_TO_GROUND",
+            extruded: true,
+            label: place.title,
+            title: place.title
+          });
+          marker.dataset.id = place.id;
+          if (PinElement) {
+            try {
+              var pin = new PinElement({
+                background: PIN_COLOR[place.category] || "#e0be72",
+                borderColor: "#14100a",
+                glyphColor: "#14100a"
+              });
+              marker.append(pin);
+            } catch (err) { /* default glyph */ }
+          }
+          marker.addEventListener("gmp-click", function () {
+            skipMapClick = true;
+            select(place.id);
+            setTimeout(function () { skipMapClick = false; }, 0);
+          });
+          map.append(marker);
+          stage._gmarkers.push(marker);
+        });
+      }
+
+      syncMarkers(places);
+      stage._hgSelect = select;
+      stage._refreshPlaces = syncMarkers;
+
+      if (opts.onMapClick) {
+        map.addEventListener("gmp-click", function (ev) {
+          if (skipMapClick) return;
+          var pos = (ev && (ev.position || (ev.detail && ev.detail.position))) || null;
+          if (pos) opts.onMapClick(pos);
+        });
+      }
+
+      if (!opts.skipAuto && places[0]) select(places[0].id, false);
+      if (done) done({ select: select });
+    }).catch(function () {
+      stage.classList.remove("is-google");
+      var cssApi = mountCss(stage, places, opts);
+      var banner = document.createElement("p");
+      banner.className = "maps-key-banner";
+      banner.textContent = "Google Maps 3D could not load. Check the Maps JavaScript API key in owner admin (enable Maps JavaScript API, restrict by referrer).";
+      stage.prepend(banner);
+      if (done) done(cssApi);
+    });
+  }
+
+  function hydratePlaces(list) {
+    var byId = {};
+    DEFAULTS.places.forEach(function (p) { byId[p.id] = p; });
+    return (list || []).map(function (p) {
+      return Object.assign({}, byId[p.id] || {}, p);
+    });
+  }
+
   function loadPlaces(done) {
     var stored = readStored();
     if (stored) {
-      done(clonePlaces(stored.places));
+      done(hydratePlaces(stored.places));
       return;
     }
     fetch("data/area-map.json", { cache: "no-store" })
       .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
       .then(function (data) {
-        done(clonePlaces((data && data.places) || DEFAULTS.places));
+        done(hydratePlaces((data && data.places) || DEFAULTS.places));
       })
       .catch(function () {
         done(clonePlaces(DEFAULTS.places));
@@ -194,8 +441,9 @@
       (place.tourHref ? "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>" : "");
   }
 
-  function renderView(stage, places, opts) {
+  function mountCss(stage, places, opts) {
     opts = opts || {};
+    stage.classList.remove("is-google");
     var mode = stage.getAttribute("data-diorama-mode") || "view";
     stage.innerHTML = terrainHTML();
     var world = stage.querySelector("[data-dio-world]");
@@ -262,6 +510,41 @@
     return { select: select, world: world };
   }
 
+  function renderView(stage, places, opts, done) {
+    opts = opts || {};
+    var api = {
+      select: function (id) {
+        if (stage._hgSelect) stage._hgSelect(id);
+        else stage._pendingSelect = id;
+      }
+    };
+    loadMapsConfig(function (cfg) {
+      var finish = function (real) {
+        if (real && real.select) api.select = real.select;
+        if (stage._pendingSelect && api.select) api.select(stage._pendingSelect);
+        if (done) done(api, cfg);
+      };
+      if (cfg.apiKey) {
+        if (stage._gmap && stage._refreshPlaces) {
+          stage._refreshPlaces(places);
+          finish({ select: stage._hgSelect });
+          return;
+        }
+        mountGoogle(stage, places, opts, cfg, finish);
+      } else {
+        var cssApi = mountCss(stage, places, opts);
+        if (!stage.querySelector(".maps-key-banner")) {
+          var banner = document.createElement("p");
+          banner.className = "maps-key-banner";
+          banner.innerHTML = "Add a Google Maps JavaScript API key in <a href=\"admin.html#area-map\">owner admin</a> to load real Gettysburg roads and buildings.";
+          stage.prepend(banner);
+        }
+        finish(cssApi);
+      }
+    });
+    return api;
+  }
+
   function slugify(str) {
     return String(str || "place")
       .toLowerCase()
@@ -314,8 +597,19 @@
     var setStatus = function (msg) { if (status) status.textContent = msg || ""; };
 
     loadPlaces(function (places) {
-      var selectedId = places[0] && places[0].id;
+        var selectedId = places[0] && places[0].id;
       var api;
+      var mapsCfg;
+
+      var onMapClick = function (pos) {
+        var place = current();
+        if (!place || pos.lat == null || pos.lng == null) return;
+        place.lat = Number(pos.lat);
+        place.lng = Number(pos.lng);
+        fillForm(place);
+        if (stage._refreshPlaces) stage._refreshPlaces(places);
+        setStatus("Moved “" + place.title + "” to " + Number(place.lat).toFixed(5) + ", " + Number(place.lng).toFixed(5) + ". Save to keep it.");
+      };
 
       var paint = function () {
         api = renderView(stage, places, {
@@ -324,10 +618,15 @@
             selectedId = place.id;
             fillForm(place);
             renderRows();
-          }
+          },
+          onMapClick: onMapClick
+        }, function (real, cfg) {
+          if (real) api = real;
+          mapsCfg = cfg;
+          fillMapsForm(cfg);
+          if (selectedId && api && api.select) api.select(selectedId);
+          renderRows();
         });
-        if (selectedId) highlight(document, selectedId);
-        renderRows();
       };
 
       function current() {
@@ -341,10 +640,35 @@
         form.category.value = place.category;
         form.tourHref.value = place.tourHref || "";
         form.tourLabel.value = place.tourLabel || "";
-        form.x.value = place.x;
-        form.z.value = place.z;
-        form.elev.value = place.elev;
+        if (form.lat) form.lat.value = place.lat;
+        if (form.lng) form.lng.value = place.lng;
+        if (form.x) form.x.value = place.x;
+        if (form.z) form.z.value = place.z;
+        if (form.elev) form.elev.value = place.elev;
         form.visible.checked = place.visible !== false;
+      }
+
+      function fillMapsForm(cfg) {
+        var mf = document.getElementById("mapsConfigForm");
+        if (!mf || !cfg) return;
+        mf.apiKey.value = cfg.apiKey || "";
+        mf.mapId.value = cfg.mapId || "";
+        mf.tilt.value = cfg.tilt;
+        mf.heading.value = cfg.heading;
+        mf.range.value = cfg.range;
+      }
+
+      function readMapsForm() {
+        var mf = document.getElementById("mapsConfigForm");
+        if (!mf) return mapsCfg;
+        mapsCfg = mergeMaps(mapsCfg || DEFAULT_MAPS, {
+          apiKey: mf.apiKey.value.trim(),
+          mapId: mf.mapId.value.trim(),
+          tilt: Number(mf.tilt.value),
+          heading: Number(mf.heading.value),
+          range: Number(mf.range.value)
+        });
+        return mapsCfg;
       }
 
       function readForm() {
@@ -355,9 +679,11 @@
         place.category = form.category.value;
         place.tourHref = form.tourHref.value.trim();
         place.tourLabel = form.tourLabel.value.trim();
-        place.x = Number(form.x.value);
-        place.z = Number(form.z.value);
-        place.elev = Number(form.elev.value);
+        if (form.lat) place.lat = Number(form.lat.value);
+        if (form.lng) place.lng = Number(form.lng.value);
+        if (form.x) place.x = Number(form.x.value);
+        if (form.z) place.z = Number(form.z.value);
+        if (form.elev) place.elev = Number(form.elev.value);
         place.visible = form.visible.checked;
       }
 
@@ -371,7 +697,7 @@
           tr.innerHTML =
             "<td><button type=\"button\" data-pick=\"" + esc(place.id) + "\">" + esc(place.title) + "</button></td>" +
             "<td>" + esc(catLabel(place.category)) + "</td>" +
-            "<td>" + Math.round(place.x) + " / " + Math.round(place.z) + "</td>" +
+            "<td>" + (place.lat ? Number(place.lat).toFixed(4) : "—") + ", " + (place.lng ? Number(place.lng).toFixed(4) : "—") + "</td>" +
             "<td>" + (place.visible !== false ? "On" : "Off") + "</td>";
           tbody.appendChild(tr);
         });
@@ -406,17 +732,23 @@
 
       form.addEventListener("input", function () {
         readForm();
-        paint();
+        if (stage._refreshPlaces) stage._refreshPlaces(places);
+        renderRows();
       });
       form.addEventListener("change", function () {
         readForm();
-        paint();
+        if (stage._refreshPlaces) stage._refreshPlaces(places);
+        else paint();
+        renderRows();
       });
 
       document.getElementById("saveMap").addEventListener("click", function () {
         readForm();
         writeStored(places);
-        setStatus("Saved on this browser. The Area page will read these pins until you reset.");
+        writeMapsStored(readMapsForm());
+        setStatus("Saved on this browser. Reload The Area page to see the Google 3D map with these pins.");
+        stage._gmap = null;
+        stage._refreshPlaces = null;
         paint();
       });
 
@@ -438,6 +770,8 @@
           category: "ridge",
           tourHref: "tours.html",
           tourLabel: "See tours",
+          lat: 39.83,
+          lng: -77.231,
           x: 50,
           z: 50,
           elev: 20,

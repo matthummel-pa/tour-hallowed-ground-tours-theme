@@ -56,8 +56,8 @@
   <section class="page-intro">
     <div class="wrap reveal">
       <span class="eyebrow">Owner Admin</span>
-      <h1>Edit the area diorama.</h1>
-      <p class="admin-note">Concept only — no login, no server. Saved pins live in this browser. In the Sage theme this screen becomes a WordPress capability check (<code>manage_options</code>) and an ACF options group or <code>area_place</code> custom post type.</p>
+      <h1>Edit the area map.</h1>
+      <p class="admin-note">Paste a Google Maps JavaScript API key to load photorealistic 3D buildings and real roads. Pins save in this browser. Sage: <code>manage_options</code> plus ACF <code>google_maps_api_key</code> and <code>area_place</code>.</p>
     </div>
   </section>
 
@@ -70,6 +70,32 @@
       </div>
 
       <div class="admin-app" data-admin-app hidden>
+        <form id="mapsConfigForm" class="admin-form maps-config">
+          <h3>Google Maps 3D</h3>
+          <p class="admin-note">Create a key in Google Cloud with the Maps JavaScript API enabled. Restrict it to this site’s HTTP referrers. HYBRID mode shows real roads on photorealistic buildings and terrain. In Sage this is an ACF option, not a hardcoded secret.</p>
+          <div class="field">
+            <label for="mapsKey">Maps JavaScript API key</label>
+            <input id="mapsKey" name="apiKey" type="password" autocomplete="off" placeholder="AIza…">
+          </div>
+          <div class="field">
+            <label for="mapsId">Map ID (optional, Cloud styling)</label>
+            <input id="mapsId" name="mapId" placeholder="">
+          </div>
+          <div class="form-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;">
+            <div class="field">
+              <label for="mapsTilt">Tilt</label>
+              <input id="mapsTilt" name="tilt" type="number" min="0" max="90" step="1">
+            </div>
+            <div class="field">
+              <label for="mapsHeading">Heading</label>
+              <input id="mapsHeading" name="heading" type="number" min="0" max="360" step="1">
+            </div>
+            <div class="field">
+              <label for="mapsRange">Range (m)</label>
+              <input id="mapsRange" name="range" type="number" min="200" max="20000" step="50">
+            </div>
+          </div>
+        </form>
         <div class="admin-toolbar">
           <button type="button" class="btn btn-primary btn-sm" id="saveMap">Save map</button>
           <button type="button" class="btn btn-outline btn-sm" id="addPlace">Add place</button>
@@ -79,8 +105,8 @@
         </div>
         <p class="admin-status" data-admin-status></p>
 
-        <div class="diorama-stage" data-diorama data-diorama-mode="edit" aria-label="Editable Gettysburg field diorama"></div>
-        <p class="dio-hint">Select a pin, then click the table to move it. Nudge with the X / Z fields if the 3D click lands off. Drag empty grass to turn the table.</p>
+        <div class="diorama-stage" data-diorama data-diorama-mode="edit" aria-label="Editable Google 3D map of Gettysburg"></div>
+        <p class="dio-hint">Click the 3D map to drop the selected pin on real ground. Save after you add a Maps API key, then the public Area page loads Google roads and buildings.</p>
 
         <div class="admin-grid" style="margin-top:1.6rem;">
           <form id="placeForm" class="admin-form">
@@ -110,18 +136,14 @@
               <label for="pTourLabel">Tour button label</label>
               <input id="pTourLabel" name="tourLabel">
             </div>
-            <div class="form-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;">
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.7rem;">
               <div class="field">
-                <label for="pX">X (east %)</label>
-                <input id="pX" name="x" type="number" min="0" max="100" step="0.5">
+                <label for="pLat">Latitude</label>
+                <input id="pLat" name="lat" type="number" min="39.7" max="39.9" step="0.00001">
               </div>
               <div class="field">
-                <label for="pZ">Z (south %)</label>
-                <input id="pZ" name="z" type="number" min="0" max="100" step="0.5">
-              </div>
-              <div class="field">
-                <label for="pElev">Height</label>
-                <input id="pElev" name="elev" type="number" min="0" max="80" step="1">
+                <label for="pLng">Longitude</label>
+                <input id="pLng" name="lng" type="number" min="-77.4" max="-77.1" step="0.00001">
               </div>
             </div>
             <div class="field">
@@ -133,7 +155,7 @@
             <h3>Places on the table</h3>
             <table class="admin-table">
               <thead>
-                <tr><th>Name</th><th>Type</th><th>X / Z</th><th>On</th></tr>
+                <tr><th>Name</th><th>Type</th><th>Lat / Lng</th><th>On</th></tr>
               </thead>
               <tbody data-place-rows></tbody>
             </table>
