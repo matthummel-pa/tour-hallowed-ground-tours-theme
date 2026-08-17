@@ -1112,12 +1112,13 @@ body.modal-locked{ overflow:hidden; }
 }
 .ol-basemap{
   position: absolute;
-  top: 22px;
-  right: 22px;
-  z-index: 5;
+  top: 5.1rem;
+  left: 8px;
+  z-index: 1000;
   display: flex;
   border: 1px solid var(--color-border);
   background: rgba(7,17,28,0.9);
+  pointer-events: auto;
 }
 .ol-basemap button{
   border: 0;

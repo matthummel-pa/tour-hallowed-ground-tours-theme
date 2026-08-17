@@ -192,10 +192,6 @@
     stage.classList.remove("is-google");
     stage.classList.add("is-ol");
     stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div>" +
-      "<div class=\"ol-basemap\" role=\"group\" aria-label=\"Basemap\">" +
-      "<button type=\"button\" data-basemap=\"map\" class=\"is-active\">Map</button>" +
-      "<button type=\"button\" data-basemap=\"sat\">Satellite</button>" +
-      "</div>" +
       "<p class=\"dio-hint\">Gold clusters are battlefield monuments — zoom in or click a cluster, then a pin. Close the popup to zoom back out. Satellite is Esri World Imagery (no Google key).</p>";
     var host = stage.querySelector("[data-ol-host]");
     var detail = document.querySelector("[data-diorama-detail]");
@@ -271,6 +267,30 @@
     });
 
     stage._olmap = map;
+
+    var basemap = document.createElement("div");
+    basemap.className = "ol-basemap";
+    basemap.setAttribute("role", "group");
+    basemap.setAttribute("aria-label", "Basemap");
+    basemap.innerHTML = "<button type=\"button\" data-basemap=\"map\" class=\"is-active\">Map</button><button type=\"button\" data-basemap=\"sat\">Satellite</button>";
+    host.appendChild(basemap);
+
+    function setBasemap(mode) {
+      var satOn = mode === "sat";
+      roads.setVisible(!satOn);
+      satellite.setVisible(satOn);
+      if (buildings) buildings.setVisible(!satOn);
+      basemap.querySelectorAll("[data-basemap]").forEach(function (btn) {
+        btn.classList.toggle("is-active", btn.getAttribute("data-basemap") === mode);
+      });
+    }
+    basemap.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-basemap]");
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setBasemap(btn.getAttribute("data-basemap"));
+    });
 
     var popupEl = document.createElement("div");
     popupEl.className = "ol-popup";
@@ -396,21 +416,6 @@
       });
       addMonumentFeatures(monuments);
     }
-
-    function setBasemap(mode) {
-      var satOn = mode === "sat";
-      roads.setVisible(!satOn);
-      satellite.setVisible(satOn);
-      if (buildings) buildings.setVisible(!satOn);
-      stage.querySelectorAll("[data-basemap]").forEach(function (btn) {
-        btn.classList.toggle("is-active", btn.getAttribute("data-basemap") === mode);
-      });
-    }
-
-    stage.querySelector(".ol-basemap").addEventListener("click", function (e) {
-      var btn = e.target.closest("[data-basemap]");
-      if (btn) setBasemap(btn.getAttribute("data-basemap"));
-    });
 
     var search = document.querySelector("[data-monument-search]");
     var searchHits = document.querySelector("[data-monument-hits]");
