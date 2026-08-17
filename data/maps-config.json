@@ -1,10 +1,6 @@
 {
-  "apiKey": "",
-  "mapId": "",
-  "center": { "lat": 39.812, "lng": -77.236, "altitude": 40 },
-  "tilt": 58,
-  "heading": 20,
-  "range": 3800,
-  "mode": "HYBRID",
-  "note": "Browser Maps JavaScript API key (restrict by HTTP referrer). Leave apiKey empty to set it in owner admin. Sage: ACF option google_maps_api_key. HYBRID = photorealistic 3D buildings/terrain with real roads."
+  "center": { "lat": 39.812, "lng": -77.236 },
+  "zoom": 13.4,
+  "rotation": -0.18,
+  "note": "OpenLayers + OpenStreetMap. No API key. rotation is radians. Sage: ACF options for center/zoom; pins remain area_place CPT."
 }

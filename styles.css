@@ -1091,14 +1091,15 @@ body.modal-locked{ overflow:hidden; }
   perspective: 1650px;
   perspective-origin: 50% 12%;
 }
-.diorama-stage.is-google{
+.diorama-stage.is-ol{
   perspective: none;
   padding: 14px 14px 8px;
   background: linear-gradient(#5c3d24, #2a1a0e);
   cursor: default;
   min-height: 0;
+  touch-action: auto;
 }
-.gmp-host{
+.ol-host{
   height: min(68vh, 640px);
   min-height: 420px;
   border-radius: 3px;
@@ -1106,12 +1107,19 @@ body.modal-locked{ overflow:hidden; }
   background: #07111c;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
 }
-.gmp-host gmp-map-3d,
-gmp-map-3d{
-  width: 100%;
-  height: 100%;
-  display: block;
+.ol-host .ol-viewport{ height: 100%; }
+.ol-host .ol-zoom button,
+.ol-host .ol-rotate button{
+  background: rgba(7,17,28,0.88);
+  color: var(--gold-300);
+  border-radius: 2px;
 }
+.ol-host .ol-attribution{
+  background: rgba(7,17,28,0.78);
+  color: var(--parchment-100);
+  font-size: 0.68rem;
+}
+.ol-host .ol-attribution a{ color: var(--gold-300); }
 .maps-key-banner{
   margin: 0 0 0.85rem;
   padding: 0.7rem 0.9rem;

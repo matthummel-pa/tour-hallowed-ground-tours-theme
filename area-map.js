@@ -5,17 +5,13 @@
   "use strict";
 
   var STORAGE = "hg-area-map-v1";
-  var MAPS_STORAGE = "hg-maps-config-v1";
+  var MAPS_STORAGE = "hg-maps-config-v2";
   var ADMIN_GATE = "hg-area-admin";
   var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a" };
   var DEFAULT_MAPS = {
-    apiKey: "",
-    mapId: "",
-    center: { lat: 39.812, lng: -77.236, altitude: 40 },
-    tilt: 58,
-    heading: 20,
-    range: 3800,
-    mode: "HYBRID"
+    center: { lat: 39.812, lng: -77.236 },
+    zoom: 13.4,
+    rotation: -0.18
   };
 
   var DEFAULTS = {
@@ -88,61 +84,12 @@
       .then(function (fileCfg) {
         var cfg = mergeMaps(DEFAULT_MAPS, fileCfg);
         cfg = mergeMaps(cfg, stored);
-        if (!cfg.apiKey && window.HG_GOOGLE_MAPS_KEY) cfg.apiKey = window.HG_GOOGLE_MAPS_KEY;
         done(cfg);
       })
       .catch(function () {
         var cfg = mergeMaps(DEFAULT_MAPS, stored);
-        if (!cfg.apiKey && window.HG_GOOGLE_MAPS_KEY) cfg.apiKey = window.HG_GOOGLE_MAPS_KEY;
         done(cfg);
       });
-  }
-
-  var mapsBootstrapped = false;
-  function bootstrapMaps(apiKey) {
-    if (window.google && google.maps && google.maps.importLibrary) {
-      return google.maps.importLibrary("maps3d");
-    }
-    if (mapsBootstrapped) {
-      return google.maps.importLibrary("maps3d");
-    }
-    mapsBootstrapped = true;
-    (function (g) {
-      var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
-      b = b[c] || (b[c] = {});
-      var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams(), u = function () {
-        return h || (h = new Promise(async function (f, n) {
-          await (a = m.createElement("script"));
-          e.set("libraries", [...r] + "");
-          for (k in g) e.set(k.replace(/[A-Z]/g, function (t) { return "_" + t[0].toLowerCase(); }), g[k]);
-          e.set("callback", c + ".maps." + q);
-          a.src = "https://maps.googleapis.com/maps/api/js?" + e;
-          d[q] = f;
-          a.onerror = function () { h = n(Error(p + " could not load.")); };
-          m.head.append(a);
-        }));
-      };
-      d[l] ? console.warn(p + " only loads once.") : d[l] = function (f) {
-        r.add(f);
-        return u().then(function () { return d[l](f); });
-      };
-    })({ key: apiKey, v: "beta" });
-    return google.maps.importLibrary("maps3d");
-  }
-
-  function cameraFor(place, cfg, close) {
-    var lat = Number(place && place.lat);
-    var lng = Number(place && place.lng);
-    if (!isFinite(lat) || !isFinite(lng)) {
-      lat = cfg.center.lat;
-      lng = cfg.center.lng;
-    }
-    return {
-      center: { lat: lat, lng: lng, altitude: close ? 30 : (cfg.center.altitude || 40) },
-      tilt: cfg.tilt,
-      heading: cfg.heading,
-      range: close ? 900 : cfg.range
-    };
   }
 
   function fillList(places, opts) {
@@ -170,115 +117,170 @@
     return visible;
   }
 
-  function mountGoogle(stage, places, opts, cfg, done) {
+  function pinStyle(feature, selectedId) {
+    var cat = feature.get("category");
+    var selected = feature.get("placeId") === selectedId;
+    var color = PIN_COLOR[cat] || "#e0be72";
+    return new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: selected ? 9 : 7,
+        fill: new ol.style.Fill({ color: color }),
+        stroke: new ol.style.Stroke({ color: "#14100a", width: 2 })
+      }),
+      text: new ol.style.Text({
+        text: String(feature.get("title") || ""),
+        offsetY: -18,
+        font: "600 11px \"IBM Plex Mono\", monospace",
+        fill: new ol.style.Fill({ color: "#f0d9a0" }),
+        stroke: new ol.style.Stroke({ color: "#07111c", width: 4 })
+      }),
+      zIndex: selected ? 20 : 10
+    });
+  }
+
+  function buildingStyle(feature) {
+    var layer = feature.get("layer") || feature.get("class") || "";
+    if (layer && String(layer).indexOf("building") === -1 && layer !== "building") {
+      return undefined;
+    }
+    return new ol.style.Style({
+      fill: new ol.style.Fill({ color: "rgba(201,162,74,0.38)" }),
+      stroke: new ol.style.Stroke({ color: "rgba(240,217,160,0.75)", width: 1 })
+    });
+  }
+
+  function mountOpenLayers(stage, places, opts, cfg, done) {
     opts = opts || {};
-    stage.classList.add("is-google");
-    stage.innerHTML = "<div class=\"gmp-host\" data-gmp-host></div><p class=\"dio-hint\">Real Gettysburg roads and buildings from Google Maps 3D (HYBRID). Drag to orbit. Click a pin or the list.</p>";
-    var host = stage.querySelector("[data-gmp-host]");
-    var detail = document.querySelector("[data-diorama-detail]");
-    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    bootstrapMaps(cfg.apiKey).then(function (lib) {
-      return google.maps.importLibrary("marker").then(function (markerLib) {
-        return { lib: lib, PinElement: markerLib && markerLib.PinElement };
-      }).catch(function () {
-        return { lib: lib, PinElement: null };
-      });
-    }).then(function (pack) {
-      var lib = pack.lib;
-      var PinElement = pack.PinElement;
-      var Map3DElement = lib.Map3DElement;
-      var MapMode = lib.MapMode;
-      var Marker3DInteractiveElement = lib.Marker3DInteractiveElement;
-      var map = new Map3DElement({
-        center: cfg.center,
-        range: cfg.range,
-        tilt: cfg.tilt,
-        heading: cfg.heading,
-        mode: (MapMode && MapMode[cfg.mode]) || cfg.mode || "HYBRID"
-      });
-      try { map.defaultUIHidden = true; } catch (err) { /* older preview builds */ }
-      if (cfg.mapId) map.mapId = cfg.mapId;
-      host.appendChild(map);
-      stage._gmap = map;
-      stage._gmarkers = [];
-
-      var select = function (id, fly) {
-        var place = places.filter(function (p) { return p.id === id; })[0];
-        if (!place) return;
-        highlight(document, id);
-        fillDetail(detail, place);
-        if (fly !== false && map.flyCameraTo && !reduce) {
-          map.flyCameraTo({ endCamera: cameraFor(place, cfg, true), durationMillis: 1400 });
-        } else if (fly !== false) {
-          var cam = cameraFor(place, cfg, true);
-          map.center = cam.center;
-          map.range = cam.range;
-          map.tilt = cam.tilt;
-          map.heading = cam.heading;
-        }
-        if (opts.onSelect) opts.onSelect(place);
-      };
-
-      var skipMapClick = false;
-      function syncMarkers(nextPlaces) {
-        places = nextPlaces;
-        (stage._gmarkers || []).forEach(function (m) { if (m.remove) m.remove(); });
-        stage._gmarkers = [];
-        var visible = fillList(places, opts);
-        visible.forEach(function (place) {
-          if (!isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) return;
-          var marker = new Marker3DInteractiveElement({
-            position: { lat: Number(place.lat), lng: Number(place.lng), altitude: 8 },
-            altitudeMode: "RELATIVE_TO_GROUND",
-            extruded: true,
-            label: place.title,
-            title: place.title
-          });
-          marker.dataset.id = place.id;
-          if (PinElement) {
-            try {
-              var pin = new PinElement({
-                background: PIN_COLOR[place.category] || "#e0be72",
-                borderColor: "#14100a",
-                glyphColor: "#14100a"
-              });
-              marker.append(pin);
-            } catch (err) { /* default glyph */ }
-          }
-          marker.addEventListener("gmp-click", function () {
-            skipMapClick = true;
-            select(place.id);
-            setTimeout(function () { skipMapClick = false; }, 0);
-          });
-          map.append(marker);
-          stage._gmarkers.push(marker);
-        });
-      }
-
-      syncMarkers(places);
-      stage._hgSelect = select;
-      stage._refreshPlaces = syncMarkers;
-
-      if (opts.onMapClick) {
-        map.addEventListener("gmp-click", function (ev) {
-          if (skipMapClick) return;
-          var pos = (ev && (ev.position || (ev.detail && ev.detail.position))) || null;
-          if (pos) opts.onMapClick(pos);
-        });
-      }
-
-      if (!opts.skipAuto && places[0]) select(places[0].id, false);
-      if (done) done({ select: select });
-    }).catch(function () {
-      stage.classList.remove("is-google");
+    if (!(window.ol && ol.Map)) {
       var cssApi = mountCss(stage, places, opts);
       var banner = document.createElement("p");
       banner.className = "maps-key-banner";
-      banner.textContent = "Google Maps 3D could not load. Check the Maps JavaScript API key in owner admin (enable Maps JavaScript API, restrict by referrer).";
+      banner.textContent = "OpenLayers did not load. Check the ol.js script on this page.";
       stage.prepend(banner);
       if (done) done(cssApi);
+      return;
+    }
+
+    stage.classList.remove("is-google");
+    stage.classList.add("is-ol");
+    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">OpenStreetMap roads and building footprints via OpenLayers. Drag to pan. Scroll to zoom. Click a pin or the list.</p>";
+    var host = stage.querySelector("[data-ol-host]");
+    var detail = document.querySelector("[data-diorama-detail]");
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var selectedId = null;
+    var pinSource = new ol.source.Vector();
+    var pins = new ol.layer.Vector({
+      source: pinSource,
+      style: function (feature) {
+        return pinStyle(feature, selectedId);
+      },
+      zIndex: 40
     });
+
+    var roads = new ol.layer.Tile({
+      source: new ol.source.OSM({
+        attributions: "© OpenStreetMap contributors"
+      })
+    });
+
+    var layers = [roads];
+    if (ol.layer.VectorTile && ol.format.MVT) {
+      layers.push(new ol.layer.VectorTile({
+        declutter: true,
+        source: new ol.source.VectorTile({
+          format: new ol.format.MVT(),
+          url: "https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf",
+          attributions: "© OpenStreetMap, © OpenFreeMap"
+        }),
+        style: function (feature) {
+          var layer = feature.get("layer");
+          if (layer !== "building" && layer !== "buildings") return undefined;
+          return buildingStyle(feature);
+        },
+        minZoom: 13,
+        opacity: 0.95
+      }));
+    }
+    layers.push(pins);
+
+    var view = new ol.View({
+      center: ol.proj.fromLonLat([cfg.center.lng, cfg.center.lat]),
+      zoom: cfg.zoom || 13.4,
+      rotation: cfg.rotation || 0,
+      constrainRotation: false
+    });
+
+    var map = new ol.Map({
+      target: host,
+      layers: layers,
+      view: view
+    });
+
+    stage._olmap = map;
+
+    var select = function (id, fly) {
+      var place = places.filter(function (p) { return p.id === id; })[0];
+      if (!place) return;
+      selectedId = id;
+      pins.changed();
+      highlight(document, id);
+      fillDetail(detail, place);
+      if (fly !== false && isFinite(Number(place.lat)) && isFinite(Number(place.lng))) {
+        var center = ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]);
+        if (reduce) {
+          view.setCenter(center);
+          view.setZoom(Math.max(view.getZoom(), 15.5));
+        } else {
+          view.animate({ center: center, zoom: 15.8, duration: 700 });
+        }
+      }
+      if (opts.onSelect) opts.onSelect(place);
+    };
+
+    function syncMarkers(nextPlaces) {
+      places = nextPlaces;
+      pinSource.clear();
+      var visible = fillList(places, opts);
+      visible.forEach(function (place) {
+        if (!isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) return;
+        pinSource.addFeature(new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)])),
+          placeId: place.id,
+          title: place.title,
+          category: place.category
+        }));
+      });
+    }
+
+    syncMarkers(places);
+    stage._hgSelect = select;
+    stage._refreshPlaces = syncMarkers;
+
+    map.on("singleclick", function (evt) {
+      var hit = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+        if (layer === pins) return feature;
+        return null;
+      });
+      if (hit) {
+        select(hit.get("placeId"));
+        return;
+      }
+      if (opts.onMapClick) {
+        var lonlat = ol.proj.toLonLat(evt.coordinate);
+        opts.onMapClick({ lng: lonlat[0], lat: lonlat[1] });
+      }
+    });
+
+    map.on("pointermove", function (evt) {
+      var hit = map.hasFeatureAtPixel(evt.pixel, {
+        layerFilter: function (layer) { return layer === pins; }
+      });
+      map.getTargetElement().style.cursor = hit ? "pointer" : "";
+    });
+
+    if (!opts.skipAuto && places[0]) select(places[0].id, false);
+    setTimeout(function () { map.updateSize(); }, 50);
+    if (done) done({ select: select });
   }
 
   function hydratePlaces(list) {
@@ -444,6 +446,7 @@
   function mountCss(stage, places, opts) {
     opts = opts || {};
     stage.classList.remove("is-google");
+    stage.classList.remove("is-ol");
     var mode = stage.getAttribute("data-diorama-mode") || "view";
     stage.innerHTML = terrainHTML();
     var world = stage.querySelector("[data-dio-world]");
@@ -524,24 +527,13 @@
         if (stage._pendingSelect && api.select) api.select(stage._pendingSelect);
         if (done) done(api, cfg);
       };
-      if (cfg.apiKey) {
-        if (stage._gmap && stage._refreshPlaces) {
+      if (stage._olmap && stage._refreshPlaces) {
           stage._refreshPlaces(places);
           finish({ select: stage._hgSelect });
           return;
         }
-        mountGoogle(stage, places, opts, cfg, finish);
-      } else {
-        var cssApi = mountCss(stage, places, opts);
-        if (!stage.querySelector(".maps-key-banner")) {
-          var banner = document.createElement("p");
-          banner.className = "maps-key-banner";
-          banner.innerHTML = "Add a Google Maps JavaScript API key in <a href=\"admin.html#area-map\">owner admin</a> to load real Gettysburg roads and buildings.";
-          stage.prepend(banner);
-        }
-        finish(cssApi);
-      }
-    });
+        mountOpenLayers(stage, places, opts, cfg, finish);
+      });
     return api;
   }
 
@@ -588,6 +580,9 @@
       enter.addEventListener("click", function () {
         sessionStorage.setItem(ADMIN_GATE, "1");
         show(true);
+        setTimeout(function () {
+          if (stage._olmap) stage._olmap.updateSize();
+        }, 80);
       });
     }
 
@@ -651,23 +646,25 @@
       function fillMapsForm(cfg) {
         var mf = document.getElementById("mapsConfigForm");
         if (!mf || !cfg) return;
-        mf.apiKey.value = cfg.apiKey || "";
-        mf.mapId.value = cfg.mapId || "";
-        mf.tilt.value = cfg.tilt;
-        mf.heading.value = cfg.heading;
-        mf.range.value = cfg.range;
+        if (mf.zoom) mf.zoom.value = cfg.zoom;
+        if (mf.rotation) mf.rotation.value = Math.round((cfg.rotation || 0) * 180 / Math.PI);
       }
 
       function readMapsForm() {
         var mf = document.getElementById("mapsConfigForm");
         if (!mf) return mapsCfg;
+        var rotDeg = Number(mf.rotation && mf.rotation.value);
         mapsCfg = mergeMaps(mapsCfg || DEFAULT_MAPS, {
-          apiKey: mf.apiKey.value.trim(),
-          mapId: mf.mapId.value.trim(),
-          tilt: Number(mf.tilt.value),
-          heading: Number(mf.heading.value),
-          range: Number(mf.range.value)
+          zoom: Number(mf.zoom && mf.zoom.value),
+          rotation: isFinite(rotDeg) ? rotDeg * Math.PI / 180 : 0
         });
+        if (stage._olmap) {
+          var view = stage._olmap.getView();
+          var center = ol.proj.toLonLat(view.getCenter());
+          mapsCfg.center = { lat: center[1], lng: center[0] };
+          mapsCfg.zoom = view.getZoom();
+          mapsCfg.rotation = view.getRotation();
+        }
         return mapsCfg;
       }
 
@@ -746,10 +743,8 @@
         readForm();
         writeStored(places);
         writeMapsStored(readMapsForm());
-        setStatus("Saved on this browser. Reload The Area page to see the Google 3D map with these pins.");
-        stage._gmap = null;
-        stage._refreshPlaces = null;
-        paint();
+        setStatus("Saved on this browser. The Area page will use these pins and the current OpenLayers view.");
+        if (stage._refreshPlaces) stage._refreshPlaces(places);
       });
 
       document.getElementById("resetMap").addEventListener("click", function () {

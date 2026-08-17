@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About Gettysburg &amp; the Battlefield | Hallowed Ground Tours</title>
-  <meta name="description" content="Interactive 3D field map of Gettysburg, PA: Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, parking, and a sample ticket-office meeting point.">
+  <meta name="description" content="Interactive OpenLayers map of Gettysburg, PA: OpenStreetMap roads and buildings, Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, and a sample meeting point.">
 <link rel="canonical" href="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="About Gettysburg &amp; the Battlefield | Hallowed Ground Tours">
-<meta property="og:description" content="Interactive 3D field map of Gettysburg, PA: Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, parking, and a sample ticket-office meeting point.">
+<meta property="og:description" content="Interactive OpenLayers map of Gettysburg, PA: OpenStreetMap roads and buildings, Cemetery Ridge, Little Round Top, Devil&#x27;s Den, downtown, and a sample meeting point.">
 <meta property="og:url" content="https://matthummel-pa.github.io/tour-hallowed-ground-tours-theme/area.html">
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Pennsylvania_-_Gettysburg_-_NARA_-_68148252_(cropped).jpg?width=1600">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,500;1,6..72,650&amp;family=Atkinson+Hyperlegible:wght@400;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -237,10 +238,10 @@
       <div class="section-head reveal">
         <span class="eyebrow">The Ground</span>
         <h2>The field, from the air.</h2>
-        <p>Google's photorealistic 3D map of Gettysburg, PA — real streets, buildings, and ridges. Click a pin for the tour that covers that ground. Owners add or move pins in the demo admin.</p>
+        <p>An OpenLayers map of Gettysburg, PA — real OpenStreetMap streets and building footprints. Click a pin for the tour that covers that ground. Owners add or move pins in the demo admin.</p>
       </div>
       <div class="diorama-layout reveal">
-        <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive Google 3D map of Gettysburg"></div>
+        <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive OpenLayers map of Gettysburg"></div>
         <aside class="diorama-panel">
           <div data-diorama-detail>
             <p class="lede">Choose a pin on the table, or a place in the list, to see which tour covers that ground.</p>
@@ -440,6 +441,7 @@
 </a>
 
 <script src="main.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js" defer></script>
 <script src="area-map.js" defer></script>
 
 </body>
