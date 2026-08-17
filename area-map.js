@@ -163,7 +163,7 @@
 
     stage.classList.remove("is-google");
     stage.classList.add("is-ol");
-    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">Click a pin for a popup about that ground. Drag to pan. Scroll to zoom.</p>";
+    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">Click a pin for a popup about that ground. Close it to zoom back out. Drag to pan. Scroll to zoom.</p>";
     var host = stage.querySelector("[data-ol-host]");
     var detail = document.querySelector("[data-diorama-detail]");
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -237,14 +237,39 @@
     });
     map.addOverlay(overlay);
 
-    function hidePopup() {
+    var overview = {
+      center: view.getCenter().slice(),
+      zoom: view.getZoom(),
+      rotation: view.getRotation()
+    };
+    var zoomedIn = false;
+
+    function restoreOverview() {
+      if (!zoomedIn) return;
+      zoomedIn = false;
+      if (reduce) {
+        view.setCenter(overview.center);
+        view.setZoom(overview.zoom);
+        view.setRotation(overview.rotation);
+        return;
+      }
+      view.animate({
+        center: overview.center,
+        zoom: overview.zoom,
+        rotation: overview.rotation,
+        duration: 700
+      });
+    }
+
+    function hidePopup(restore) {
       overlay.setPosition(undefined);
       popupEl.classList.remove("is-open");
+      if (restore) restoreOverview();
     }
 
     function showPopup(place) {
       if (!place || !isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) {
-        hidePopup();
+        hidePopup(false);
         return;
       }
       popupEl.setAttribute("aria-label", place.title);
@@ -261,7 +286,7 @@
     popupCloser.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
-      hidePopup();
+      hidePopup(true);
     });
 
     var select = function (id, fly) {
@@ -271,10 +296,21 @@
       pins.changed();
       highlight(document, id);
       fillDetail(detail, place);
-      if (fly !== false) showPopup(place);
-      else hidePopup();
+      if (fly !== false) {
+        if (!zoomedIn) {
+          overview = {
+            center: view.getCenter().slice(),
+            zoom: view.getZoom(),
+            rotation: view.getRotation()
+          };
+        }
+        showPopup(place);
+      } else {
+        hidePopup(false);
+      }
       if (fly !== false && isFinite(Number(place.lat)) && isFinite(Number(place.lng))) {
         var center = ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]);
+        zoomedIn = true;
         if (reduce) {
           view.setCenter(center);
           view.setZoom(Math.max(view.getZoom(), 15.5));
@@ -313,7 +349,7 @@
         select(hit.get("placeId"));
         return;
       }
-      hidePopup();
+      hidePopup(!opts.onMapClick);
       if (opts.onMapClick) {
         var lonlat = ol.proj.toLonLat(evt.coordinate);
         opts.onMapClick({ lng: lonlat[0], lat: lonlat[1] });
@@ -328,7 +364,7 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") hidePopup();
+      if (e.key === "Escape") hidePopup(true);
     });
 
     if (!opts.skipAuto && places[0]) select(places[0].id, false);
