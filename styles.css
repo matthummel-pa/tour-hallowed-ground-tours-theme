@@ -50,8 +50,9 @@
   --color-border: rgba(240,217,160,0.16);
   --color-on-gold: #14100a;
 
-  --font-head:'Outfit', system-ui, sans-serif;
-  --font-serif:'Instrument Serif', Georgia, serif;
+  --font-ui:'Outfit', system-ui, sans-serif;
+  --font-head:'Playfair Display', 'Iowan Old Style', Georgia, serif;
+  --font-serif:'Playfair Display', Georgia, serif;
   --font-mono:'JetBrains Mono','Courier New', monospace;
 
   --radius-sm:6px;
@@ -77,7 +78,7 @@ html{ scroll-behavior:smooth; }
 
 body{
   margin:0;
-  font-family: var(--font-head);
+  font-family: var(--font-ui);
   background:
     radial-gradient(1200px 700px at 12% -10%, rgba(201,162,74,0.08), transparent 50%),
     radial-gradient(900px 500px at 100% 0%, rgba(42,28,51,0.45), transparent 45%),
@@ -96,7 +97,22 @@ body::before{
 
 img{ max-width:100%; display:block; }
 a{ color:inherit; }
-h1,h2,h3,h4{ margin:0; font-family:var(--font-head); font-weight:700; letter-spacing:-0.02em; color:var(--parchment-50); }
+h1,h2,h3{
+  margin:0;
+  font-family:var(--font-head);
+  font-weight:700;
+  letter-spacing:-0.03em;
+  color:var(--parchment-50);
+  font-optical-sizing:auto;
+  text-wrap:balance;
+}
+h4{
+  margin:0;
+  font-family:var(--font-ui);
+  font-weight:700;
+  letter-spacing:0.08em;
+  color:var(--parchment-50);
+}
 p{ margin:0; }
 ul{ margin:0; padding:0; list-style:none; }
 button{ font-family:inherit; }
@@ -141,6 +157,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   display:inline-flex; align-items:center; justify-content:center; gap:0.55rem;
   padding:0.9rem 1.75rem;
   border-radius:999px;
+  font-family: var(--font-ui);
   font-weight:650; font-size:0.95rem;
   border:2px solid transparent;
   cursor:pointer;
@@ -334,14 +351,21 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   margin-bottom:1.5rem;
 }
 .hero-title{
-  font-size: clamp(2.6rem, 7vw, 5.4rem);
-  line-height:0.98;
-  max-width:13ch;
-  margin-bottom:1.15rem;
-  letter-spacing:-0.035em;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: clamp(3.15rem, 9.2vw, 7.35rem);
+  line-height:0.9;
+  max-width:11.5ch;
+  margin-bottom:1.25rem;
+  letter-spacing:-0.045em;
+  font-optical-sizing:auto;
+  text-wrap:balance;
 }
 .hero-title em{
-  font-family:var(--font-serif); font-style:italic; font-weight:400;
+  font-family:var(--font-head);
+  font-style:italic;
+  font-weight:700;
+  letter-spacing:-0.04em;
   color:var(--gold-300);
   display:inline-block;
 }
@@ -361,7 +385,10 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .path-card:hover{ transform:translateY(-3px); border-color: var(--gold-500); background: rgba(20,14,24,0.7); }
-.path-card b{ display:block; font-size:1.02rem; margin-bottom:0.25rem; }
+.path-card b{
+  display:block; font-size:1.12rem; margin-bottom:0.25rem;
+  font-family: var(--font-head); font-weight:700; letter-spacing:-0.02em;
+}
 .path-card span{ display:block; font-size:0.84rem; color:rgba(247,241,227,0.72); }
 .path-card.is-lantern{ border-color: rgba(201,160,106,0.28); }
 
@@ -406,7 +433,14 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   color:#fff;
 }
 .section-head{ max-width:680px; margin-bottom:2.5rem; }
-.section-head h2{ font-size:clamp(2rem,4.4vw,3.05rem); margin-block:0.5rem 0.85rem; line-height:1.08; }
+.section-head h2{
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size:clamp(2.15rem,4.8vw,3.35rem);
+  margin-block:0.5rem 0.85rem;
+  line-height:1.06;
+  letter-spacing:-0.035em;
+}
 .section-head p{ color: var(--color-ink-soft); font-size:1.05rem; }
 .section-head--row{
   display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:1.2rem;
@@ -535,7 +569,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .chip-easy{ background: rgba(90,170,120,0.16); color:#b7e4c7; }
 .chip-moderate{ background: rgba(224,190,114,0.16); color:#f0d9a0; }
 .chip-strenuous{ background: rgba(210,110,90,0.18); color:#f3c0b4; }
-.tour-card h3{ font-size:1.18rem; }
+.tour-card h3{ font-size:1.32rem; font-weight:700; letter-spacing:-0.025em; line-height:1.2; }
 .tour-card .desc{ font-size:0.9rem; color:var(--color-ink-soft); flex:1; }
 .tour-price-row{ display:flex; align-items:baseline; justify-content:space-between; margin-top:0.25rem; }
 .tour-price{ font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--gold-300); }
@@ -601,7 +635,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   position:relative; overflow:hidden;
   border:1px solid var(--color-border);
 }
-.book-band h2{ font-size:clamp(1.6rem,3.4vw,2.2rem); max-width:22ch; }
+.book-band h2{ font-size:clamp(1.75rem,3.6vw,2.45rem); max-width:18ch; font-weight:700; letter-spacing:-0.03em; }
 .book-band p{ color:rgba(247,241,227,0.78); margin-top:0.5rem; max-width:40ch; }
 
 .trust-strip{
@@ -622,7 +656,16 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 }
 .stars{ display:flex; gap:2px; margin-bottom:0.8rem; }
 .stars svg{ width:16px; height:16px; color:var(--gold-500); }
-.review-card blockquote{ font-family:var(--font-serif); font-style:italic; font-size:1.28rem; line-height:1.4; color:var(--parchment-50); margin-bottom:1rem; }
+.review-card blockquote{
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-weight:600;
+  font-size:1.32rem;
+  line-height:1.35;
+  letter-spacing:-0.02em;
+  color:var(--parchment-50);
+  margin-bottom:1rem;
+}
 .review-author{ font-size:0.85rem; color:var(--color-ink-soft); font-weight:600; }
 .review-author span{ display:block; font-weight:400; font-size:0.78rem; color:var(--ink-500); margin-top:0.1rem; }
 
@@ -881,7 +924,15 @@ body.modal-locked{ overflow:hidden; }
 
 .page-intro{ background: #05080c; color:#fff; padding-block: clamp(2.6rem,5vw,4.4rem); }
 .page-intro .eyebrow{ color: var(--gold-300); }
-.page-intro h1{ font-size: clamp(2.1rem,4.8vw,3.4rem); margin-block:0.5rem 0.9rem; max-width:18ch; }
+.page-intro h1{
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: clamp(2.35rem, 5.4vw, 4rem);
+  margin-block:0.5rem 0.9rem;
+  max-width:16ch;
+  letter-spacing:-0.04em;
+  line-height:1.02;
+}
 .page-intro p{ color: rgba(247,241,227,0.82); font-size:1.08rem; max-width:56ch; }
 
 .prose{ max-width:760px; }
