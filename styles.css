@@ -62,7 +62,7 @@
   --radius-sm:2px;
   --radius-md:3px;
   --radius-lg:4px;
-  --ticket: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  --ticket: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
   --shadow-soft: 0 30px 80px -40px rgba(0,0,0,0.85);
   --shadow-card: 0 1px 0 rgba(240,217,160,0.08), 0 18px 40px -24px rgba(0,0,0,0.7);
 
@@ -579,18 +579,19 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 
 .tour-card{
   background: var(--color-surface);
-  border-radius:var(--radius-sm); overflow:hidden;
+  border-radius:0;
+  overflow:visible;
   border:1px solid var(--color-border);
   display:flex; flex-direction:column;
   position:relative;
+  clip-path: var(--ticket);
   transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease), border-color 0.28s var(--ease);
 }
-.tour-card::before, .tour-card::after{
-  content:""; position:absolute; top:136px; width:16px; height:16px; border-radius:50%;
-  background: var(--color-bg); z-index:2;
+.tour-card::before, .tour-card::after{ display:none; }
+.tour-body{
+  padding:1.35rem; display:flex; flex-direction:column; gap:0.7rem; flex:1;
+  border-top: 2px dashed rgba(224,177,90,0.28);
 }
-.tour-card::before{ left:-8px; box-shadow: 0 28px 0 var(--color-bg), 0 56px 0 var(--color-bg); }
-.tour-card::after{ right:-8px; box-shadow: 0 28px 0 var(--color-bg), 0 56px 0 var(--color-bg); }
 .tour-card:hover{ transform:translateY(-6px) rotate(-0.35deg); border-color: var(--brick); }
 .tour-card.is-hidden{ display:none; }
 .tour-card[data-category="after-dark"]{ background: linear-gradient(180deg, #16101c, var(--slate-850)); }
@@ -617,7 +618,6 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   padding:0.28rem 0.55rem; border-radius: var(--radius-sm); border:1px solid rgba(240,217,160,0.3);
 }
 
-.tour-body{ padding:1.35rem; display:flex; flex-direction:column; gap:0.7rem; flex:1; }
 .tour-meta{ display:flex; flex-wrap:wrap; gap:0.45rem; }
 .chip{
   font-family:var(--font-mono); font-size:0.66rem; letter-spacing:0.03em; text-transform:uppercase;
