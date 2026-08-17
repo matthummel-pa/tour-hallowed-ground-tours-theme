@@ -1093,6 +1093,7 @@ body.modal-locked{ overflow:hidden; }
 }
 .diorama-stage.is-ol{
   perspective: none;
+  overflow: visible;
   padding: 14px 14px 8px;
   background: linear-gradient(#5c3d24, #2a1a0e);
   cursor: default;
@@ -1124,8 +1125,6 @@ body.modal-locked{ overflow:hidden; }
   overflow: visible;
 }
 .ol-popup{
-  display: none;
-  position: relative;
   min-width: 220px;
   max-width: min(280px, 78vw);
   background: var(--color-surface);
@@ -1135,7 +1134,6 @@ body.modal-locked{ overflow:hidden; }
   box-shadow: var(--shadow-card), 0 18px 40px -18px rgba(0,0,0,0.75);
   padding: 0.95rem 1rem 1.05rem;
 }
-.ol-popup.is-open{ display: block; }
 .ol-popup::after{
   content: "";
   position: absolute;

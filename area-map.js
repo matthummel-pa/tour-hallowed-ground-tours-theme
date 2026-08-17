@@ -227,7 +227,6 @@
     var popupCloser = popupEl.querySelector(".ol-popup-closer");
     var overlay = new ol.Overlay({
       element: popupEl,
-      className: "ol-popup-overlay",
       positioning: "bottom-center",
       offset: [0, -18],
       stopEvent: true,
@@ -254,8 +253,9 @@
         "<h3>" + esc(place.title) + "</h3>" +
         "<p>" + esc(place.blurb) + "</p>" +
         (place.tourHref ? "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>" : "");
-      overlay.setPosition(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]));
       popupEl.classList.add("is-open");
+      overlay.setPosition(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]));
+      if (overlay.panIntoView) overlay.panIntoView({ margin: 36 });
     }
 
     popupCloser.addEventListener("click", function (e) {
