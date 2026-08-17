@@ -1119,7 +1119,63 @@ body.modal-locked{ overflow:hidden; }
   color: var(--parchment-100);
   font-size: 0.68rem;
 }
-.ol-host .ol-attribution a{ color: var(--gold-300); }
+.ol-host .ol-overlaycontainer-stopevent,
+.ol-host .ol-overlaycontainer{
+  overflow: visible;
+}
+.ol-popup{
+  display: none;
+  position: relative;
+  min-width: 220px;
+  max-width: min(280px, 78vw);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card), 0 18px 40px -18px rgba(0,0,0,0.75);
+  padding: 0.95rem 1rem 1.05rem;
+}
+.ol-popup.is-open{ display: block; }
+.ol-popup::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.ol-popup-closer{
+  position: absolute;
+  top: 0.45rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--gold-300);
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.ol-popup-closer::before{ content: "\00d7"; }
+.ol-popup-body .eyebrow{ display: block; margin-bottom: 0.25rem; }
+.ol-popup-body h3{
+  font-size: 1.2rem;
+  margin: 0.15rem 1.6rem 0.45rem 0;
+  line-height: 1.15;
+}
+.ol-popup-body p{
+  color: var(--color-ink-soft);
+  font-size: 0.88rem;
+  margin: 0 0 0.75rem;
+}
+.ol-popup-body p:last-child{ margin-bottom: 0; }
 .maps-key-banner{
   margin: 0 0 0.85rem;
   padding: 0.7rem 0.9rem;

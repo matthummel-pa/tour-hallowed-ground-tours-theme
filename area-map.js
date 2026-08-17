@@ -163,7 +163,7 @@
 
     stage.classList.remove("is-google");
     stage.classList.add("is-ol");
-    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">OpenStreetMap roads and building footprints via OpenLayers. Drag to pan. Scroll to zoom. Click a pin or the list.</p>";
+    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">Click a pin for a popup about that ground. Drag to pan. Scroll to zoom.</p>";
     var host = stage.querySelector("[data-ol-host]");
     var detail = document.querySelector("[data-diorama-detail]");
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -218,6 +218,52 @@
 
     stage._olmap = map;
 
+    var popupEl = document.createElement("div");
+    popupEl.className = "ol-popup";
+    popupEl.setAttribute("role", "dialog");
+    popupEl.setAttribute("aria-live", "polite");
+    popupEl.innerHTML = "<button type=\"button\" class=\"ol-popup-closer\" aria-label=\"Close\"></button><div class=\"ol-popup-body\"></div>";
+    var popupBody = popupEl.querySelector(".ol-popup-body");
+    var popupCloser = popupEl.querySelector(".ol-popup-closer");
+    var overlay = new ol.Overlay({
+      element: popupEl,
+      className: "ol-popup-overlay",
+      positioning: "bottom-center",
+      offset: [0, -18],
+      stopEvent: true,
+      autoPan: {
+        animation: { duration: reduce ? 0 : 280 },
+        margin: 36
+      }
+    });
+    map.addOverlay(overlay);
+
+    function hidePopup() {
+      overlay.setPosition(undefined);
+      popupEl.classList.remove("is-open");
+    }
+
+    function showPopup(place) {
+      if (!place || !isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) {
+        hidePopup();
+        return;
+      }
+      popupEl.setAttribute("aria-label", place.title);
+      popupBody.innerHTML =
+        "<span class=\"eyebrow\">" + esc(catLabel(place.category)) + "</span>" +
+        "<h3>" + esc(place.title) + "</h3>" +
+        "<p>" + esc(place.blurb) + "</p>" +
+        (place.tourHref ? "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>" : "");
+      overlay.setPosition(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]));
+      popupEl.classList.add("is-open");
+    }
+
+    popupCloser.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      hidePopup();
+    });
+
     var select = function (id, fly) {
       var place = places.filter(function (p) { return p.id === id; })[0];
       if (!place) return;
@@ -225,6 +271,8 @@
       pins.changed();
       highlight(document, id);
       fillDetail(detail, place);
+      if (fly !== false) showPopup(place);
+      else hidePopup();
       if (fly !== false && isFinite(Number(place.lat)) && isFinite(Number(place.lng))) {
         var center = ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]);
         if (reduce) {
@@ -265,6 +313,7 @@
         select(hit.get("placeId"));
         return;
       }
+      hidePopup();
       if (opts.onMapClick) {
         var lonlat = ol.proj.toLonLat(evt.coordinate);
         opts.onMapClick({ lng: lonlat[0], lat: lonlat[1] });
@@ -276,6 +325,10 @@
         layerFilter: function (layer) { return layer === pins; }
       });
       map.getTargetElement().style.cursor = hit ? "pointer" : "";
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hidePopup();
     });
 
     if (!opts.skipAuto && places[0]) select(places[0].id, false);
@@ -433,7 +486,7 @@
   function fillDetail(panel, place) {
     if (!panel) return;
     if (!place) {
-      panel.innerHTML = "<p class=\"lede\">Choose a pin on the table, or a place in the list, to see which tour covers that ground.</p>";
+      panel.innerHTML = "<p class=\"lede\">Click a pin for a popup about that ground, or use the list.</p>";
       return;
     }
     panel.innerHTML =
