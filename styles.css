@@ -1092,6 +1092,7 @@ body.modal-locked{ overflow:hidden; }
   perspective-origin: 50% 12%;
 }
 .diorama-stage.is-ol{
+  position: relative;
   perspective: none;
   overflow: visible;
   padding: 14px 14px 8px;
@@ -1101,12 +1102,36 @@ body.modal-locked{ overflow:hidden; }
   touch-action: auto;
 }
 .ol-host{
+  position: relative;
   height: min(68vh, 640px);
   min-height: 420px;
   border-radius: 3px;
   overflow: hidden;
   background: #07111c;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+}
+.ol-basemap{
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 5;
+  display: flex;
+  border: 1px solid var(--color-border);
+  background: rgba(7,17,28,0.9);
+}
+.ol-basemap button{
+  border: 0;
+  background: transparent;
+  color: var(--parchment-100);
+  font: 600 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+.ol-basemap button.is-active{
+  background: var(--gold-500);
+  color: #14100a;
 }
 .ol-host .ol-viewport{ height: 100%; }
 .ol-host .ol-zoom button,
@@ -1125,8 +1150,8 @@ body.modal-locked{ overflow:hidden; }
   overflow: visible;
 }
 .ol-popup{
-  min-width: 220px;
-  max-width: min(280px, 78vw);
+  min-width: 240px;
+  max-width: min(320px, 82vw);
   background: var(--color-surface);
   color: var(--color-ink);
   border: 1px solid var(--color-border);
@@ -1174,6 +1199,52 @@ body.modal-locked{ overflow:hidden; }
   margin: 0 0 0.75rem;
 }
 .ol-popup-body p:last-child{ margin-bottom: 0; }
+.ol-popup-photo{
+  margin: 0 0 0.7rem;
+}
+.ol-popup-photo img{
+  display: block;
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #0b141c;
+}
+.ol-popup-photo figcaption,
+.ol-popup-photo-missing,
+.ol-popup-coords{
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--gold-300);
+  margin: 0.35rem 0 0.65rem;
+}
+.ol-popup-photo figcaption a{ color: inherit; }
+.dio-search-label{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-300);
+  margin: 0.4rem 0 0.35rem;
+}
+.dio-search{
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: #0b141c;
+  border: 1px solid var(--color-border);
+  color: var(--parchment-100);
+  font: 0.9rem/1.3 var(--font-body);
+}
+.dio-list-kicker{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-300);
+  margin: 0.85rem 0 0.35rem;
+}
+.diorama-panel .ol-popup-photo img{ height: 160px; }
 .maps-key-banner{
   margin: 0 0 0.85rem;
   padding: 0.7rem 0.9rem;

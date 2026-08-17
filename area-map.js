@@ -7,7 +7,7 @@
   var STORAGE = "hg-area-map-v1";
   var MAPS_STORAGE = "hg-maps-config-v2";
   var ADMIN_GATE = "hg-area-admin";
-  var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a" };
+  var PIN_COLOR = { ridge: "#e0be72", hill: "#7eb56a", hike: "#7eb56a", downtown: "#c9a06a", meet: "#d36a3a", monument: "#d4b56a" };
   var DEFAULT_MAPS = {
     center: { lat: 39.812, lng: -77.236 },
     zoom: 13.4,
@@ -94,7 +94,9 @@
 
   function fillList(places, opts) {
     var list = document.querySelector("[data-diorama-list]");
-    var visible = places.filter(function (p) { return p.visible !== false; });
+    var visible = places.filter(function (p) {
+      return p.visible !== false && p.category !== "monument";
+    });
     if (!list) return visible;
     list.innerHTML = "";
     visible.forEach(function (place) {
@@ -117,24 +119,50 @@
     return visible;
   }
 
-  function pinStyle(feature, selectedId) {
+  function pinStyle(feature, selectedId, zoom) {
     var cat = feature.get("category");
     var selected = feature.get("placeId") === selectedId;
     var color = PIN_COLOR[cat] || "#e0be72";
+    var monument = cat === "monument";
+    var showLabel = selected || (!monument && zoom >= 14.5) || (monument && zoom >= 16.4);
+    var style = {
+      image: new ol.style.Circle({
+        radius: selected ? 9 : (monument ? 5 : 7),
+        fill: new ol.style.Fill({ color: color }),
+        stroke: new ol.style.Stroke({ color: "#14100a", width: monument ? 1.25 : 2 })
+      }),
+      zIndex: selected ? 20 : (monument ? 8 : 12)
+    };
+    if (showLabel) {
+      style.text = new ol.style.Text({
+        text: String(feature.get("title") || ""),
+        offsetY: monument ? -14 : -18,
+        font: monument ? "500 10px \"IBM Plex Mono\", monospace" : "600 11px \"IBM Plex Mono\", monospace",
+        fill: new ol.style.Fill({ color: "#f0d9a0" }),
+        stroke: new ol.style.Stroke({ color: "#07111c", width: 4 })
+      });
+    }
+    return new ol.style.Style(style);
+  }
+
+  function clusterStyle(feature, selectedId) {
+    var members = feature.get("features") || [];
+    if (members.length === 1) {
+      return pinStyle(members[0], selectedId, 16);
+    }
+    var count = String(members.length);
     return new ol.style.Style({
       image: new ol.style.Circle({
-        radius: selected ? 9 : 7,
-        fill: new ol.style.Fill({ color: color }),
+        radius: 12 + Math.min(8, Math.log(members.length) * 3),
+        fill: new ol.style.Fill({ color: "rgba(212,181,106,0.92)" }),
         stroke: new ol.style.Stroke({ color: "#14100a", width: 2 })
       }),
       text: new ol.style.Text({
-        text: String(feature.get("title") || ""),
-        offsetY: -18,
-        font: "600 11px \"IBM Plex Mono\", monospace",
-        fill: new ol.style.Fill({ color: "#f0d9a0" }),
-        stroke: new ol.style.Stroke({ color: "#07111c", width: 4 })
+        text: count,
+        font: "700 11px \"IBM Plex Mono\", monospace",
+        fill: new ol.style.Fill({ color: "#14100a" })
       }),
-      zIndex: selected ? 20 : 10
+      zIndex: 6
     });
   }
 
@@ -163,18 +191,41 @@
 
     stage.classList.remove("is-google");
     stage.classList.add("is-ol");
-    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div><p class=\"dio-hint\">Click a pin for a popup about that ground. Close it to zoom back out. Drag to pan. Scroll to zoom.</p>";
+    stage.innerHTML = "<div class=\"ol-host\" data-ol-host></div>" +
+      "<div class=\"ol-basemap\" role=\"group\" aria-label=\"Basemap\">" +
+      "<button type=\"button\" data-basemap=\"map\" class=\"is-active\">Map</button>" +
+      "<button type=\"button\" data-basemap=\"sat\">Satellite</button>" +
+      "</div>" +
+      "<p class=\"dio-hint\">Gold clusters are battlefield monuments — zoom in or click a cluster, then a pin. Close the popup to zoom back out. Satellite is Esri World Imagery (no Google key).</p>";
     var host = stage.querySelector("[data-ol-host]");
     var detail = document.querySelector("[data-diorama-detail]");
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var selectedId = null;
+    var view = new ol.View({
+      center: ol.proj.fromLonLat([cfg.center.lng, cfg.center.lat]),
+      zoom: cfg.zoom || 13.4,
+      rotation: cfg.rotation || 0,
+      constrainRotation: false
+    });
     var pinSource = new ol.source.Vector();
+    var monumentSource = new ol.source.Vector();
+    var clusterSource = (ol.source.Cluster)
+      ? new ol.source.Cluster({ distance: 42, minDistance: 18, source: monumentSource })
+      : monumentSource;
     var pins = new ol.layer.Vector({
       source: pinSource,
       style: function (feature) {
-        return pinStyle(feature, selectedId);
+        return pinStyle(feature, selectedId, view.getZoom());
       },
       zIndex: 40
+    });
+    var monumentLayer = new ol.layer.Vector({
+      source: clusterSource,
+      style: function (feature) {
+        if (feature.get("features")) return clusterStyle(feature, selectedId);
+        return pinStyle(feature, selectedId, view.getZoom());
+      },
+      zIndex: 30
     });
 
     var roads = new ol.layer.Tile({
@@ -182,10 +233,19 @@
         attributions: "© OpenStreetMap contributors"
       })
     });
+    var satellite = new ol.layer.Tile({
+      visible: false,
+      source: new ol.source.XYZ({
+        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attributions: "Satellite: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+        maxZoom: 19
+      })
+    });
 
-    var layers = [roads];
+    var layers = [roads, satellite];
+    var buildings = null;
     if (ol.layer.VectorTile && ol.format.MVT) {
-      layers.push(new ol.layer.VectorTile({
+      buildings = new ol.layer.VectorTile({
         declutter: true,
         source: new ol.source.VectorTile({
           format: new ol.format.MVT(),
@@ -199,16 +259,10 @@
         },
         minZoom: 13,
         opacity: 0.95
-      }));
+      });
+      layers.push(buildings);
     }
-    layers.push(pins);
-
-    var view = new ol.View({
-      center: ol.proj.fromLonLat([cfg.center.lng, cfg.center.lat]),
-      zoom: cfg.zoom || 13.4,
-      rotation: cfg.rotation || 0,
-      constrainRotation: false
-    });
+    layers.push(monumentLayer, pins);
 
     var map = new ol.Map({
       target: host,
@@ -273,11 +327,7 @@
         return;
       }
       popupEl.setAttribute("aria-label", place.title);
-      popupBody.innerHTML =
-        "<span class=\"eyebrow\">" + esc(catLabel(place.category)) + "</span>" +
-        "<h3>" + esc(place.title) + "</h3>" +
-        "<p>" + esc(place.blurb) + "</p>" +
-        (place.tourHref ? "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>" : "");
+      popupBody.innerHTML = placeCardHTML(place);
       popupEl.classList.add("is-open");
       overlay.setPosition(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]));
       if (overlay.panIntoView) overlay.panIntoView({ margin: 36 });
@@ -289,11 +339,15 @@
       hidePopup(true);
     });
 
+    var monuments = filterMonumentsAwayFromTours(opts.monuments || [], places);
+    var allPlaces = places.concat(monuments);
+
     var select = function (id, fly) {
-      var place = places.filter(function (p) { return p.id === id; })[0];
+      var place = allPlaces.filter(function (p) { return p.id === id; })[0];
       if (!place) return;
       selectedId = id;
       pins.changed();
+      monumentLayer.changed();
       highlight(document, id);
       fillDetail(detail, place);
       if (fly !== false) showPopup(place);
@@ -301,18 +355,34 @@
       if (fly !== false && isFinite(Number(place.lat)) && isFinite(Number(place.lng))) {
         var center = ol.proj.fromLonLat([Number(place.lng), Number(place.lat)]);
         zoomedIn = true;
+        var targetZoom = place.category === "monument" ? 17.2 : 15.8;
         if (reduce) {
           view.setCenter(center);
-          view.setZoom(Math.max(view.getZoom(), 15.5));
+          view.setZoom(Math.max(view.getZoom(), targetZoom));
         } else {
-          view.animate({ center: center, zoom: 15.8, duration: 700 });
+          view.animate({ center: center, zoom: targetZoom, duration: 700 });
         }
       }
       if (opts.onSelect) opts.onSelect(place);
     };
 
+    function addMonumentFeatures(list) {
+      monumentSource.clear();
+      list.forEach(function (place) {
+        if (!isFinite(Number(place.lat)) || !isFinite(Number(place.lng))) return;
+        monumentSource.addFeature(new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([Number(place.lng), Number(place.lat)])),
+          placeId: place.id,
+          title: place.title,
+          category: "monument"
+        }));
+      });
+    }
+
     function syncMarkers(nextPlaces) {
       places = nextPlaces;
+      monuments = filterMonumentsAwayFromTours(opts.monuments || [], places);
+      allPlaces = places.concat(monuments);
       pinSource.clear();
       var visible = fillList(places, opts);
       visible.forEach(function (place) {
@@ -324,6 +394,46 @@
           category: place.category
         }));
       });
+      addMonumentFeatures(monuments);
+    }
+
+    function setBasemap(mode) {
+      var satOn = mode === "sat";
+      roads.setVisible(!satOn);
+      satellite.setVisible(satOn);
+      if (buildings) buildings.setVisible(!satOn);
+      stage.querySelectorAll("[data-basemap]").forEach(function (btn) {
+        btn.classList.toggle("is-active", btn.getAttribute("data-basemap") === mode);
+      });
+    }
+
+    stage.querySelector(".ol-basemap").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-basemap]");
+      if (btn) setBasemap(btn.getAttribute("data-basemap"));
+    });
+
+    var search = document.querySelector("[data-monument-search]");
+    var searchHits = document.querySelector("[data-monument-hits]");
+    if (search && searchHits && !search.dataset.bound) {
+      search.dataset.bound = "1";
+      search.addEventListener("input", function () {
+        var q = search.value.trim().toLowerCase();
+        searchHits.innerHTML = "";
+        if (q.length < 2) return;
+        monuments.filter(function (m) {
+          return m.title.toLowerCase().indexOf(q) !== -1;
+        }).slice(0, 12).forEach(function (m) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.setAttribute("data-id", m.id);
+          b.innerHTML = "<b>" + esc(m.title) + "</b><span>Monument</span>";
+          searchHits.appendChild(b);
+        });
+      });
+      searchHits.addEventListener("click", function (e) {
+        var btn = e.target.closest("button[data-id]");
+        if (btn && stage._hgSelect) stage._hgSelect(btn.getAttribute("data-id"));
+      });
     }
 
     syncMarkers(places);
@@ -332,11 +442,21 @@
 
     map.on("singleclick", function (evt) {
       var hit = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-        if (layer === pins) return feature;
+        if (layer === pins || layer === monumentLayer) return feature;
         return null;
       });
       if (hit) {
-        select(hit.get("placeId"));
+        var cluster = hit.get("features");
+        if (cluster && cluster.length > 1) {
+          view.animate({
+            center: hit.getGeometry().getCoordinates(),
+            zoom: Math.min((view.getZoom() || 13) + 1.6, 18),
+            duration: reduce ? 0 : 400
+          });
+          return;
+        }
+        var id = cluster && cluster[0] ? cluster[0].get("placeId") : hit.get("placeId");
+        select(id);
         return;
       }
       hidePopup(!opts.onMapClick);
@@ -348,7 +468,7 @@
 
     map.on("pointermove", function (evt) {
       var hit = map.hasFeatureAtPixel(evt.pixel, {
-        layerFilter: function (layer) { return layer === pins; }
+        layerFilter: function (layer) { return layer === pins || layer === monumentLayer; }
       });
       map.getTargetElement().style.cursor = hit ? "pointer" : "";
     });
@@ -384,6 +504,23 @@
       .catch(function () {
         done(clonePlaces(DEFAULTS.places));
       });
+  }
+
+  function loadMonuments(done) {
+    fetch("data/monuments.json", { cache: "no-store" })
+      .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
+      .then(function (data) {
+        done(Array.isArray(data && data.monuments) ? data.monuments : []);
+      })
+      .catch(function () { done([]); });
+  }
+
+  function filterMonumentsAwayFromTours(monuments, tours) {
+    return (monuments || []).filter(function (m) {
+      return !(tours || []).some(function (t) {
+        return isFinite(Number(t.lat)) && metersApart(m, t) < 22;
+      });
+    });
   }
 
   function terrainHTML() {
@@ -430,8 +567,49 @@
   }
 
   function catLabel(cat) {
-    var map = { ridge: "Ridge", hill: "Hill", downtown: "Downtown", meet: "Meeting point", hike: "Hike ground" };
+    var map = { ridge: "Ridge", hill: "Hill", downtown: "Downtown", meet: "Meeting point", hike: "Hike ground", monument: "Monument" };
     return map[cat] || cat;
+  }
+
+  function formatCoords(lat, lng) {
+    var n = Math.abs(Number(lat)).toFixed(5);
+    var e = Math.abs(Number(lng)).toFixed(5);
+    var ns = Number(lat) >= 0 ? "N" : "S";
+    var ew = Number(lng) >= 0 ? "E" : "W";
+    return n + "\u00b0 " + ns + ", " + e + "\u00b0 " + ew;
+  }
+
+  function metersApart(a, b) {
+    var r = 6371000;
+    var p1 = Number(a.lat) * Math.PI / 180;
+    var p2 = Number(b.lat) * Math.PI / 180;
+    var dp = (Number(b.lat) - Number(a.lat)) * Math.PI / 180;
+    var dl = (Number(b.lng) - Number(a.lng)) * Math.PI / 180;
+    var h = Math.sin(dp / 2) * Math.sin(dp / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+    return 2 * r * Math.asin(Math.sqrt(h));
+  }
+
+  function placeCardHTML(place, opts) {
+    opts = opts || {};
+    var html = "<span class=\"eyebrow\">" + esc(catLabel(place.category)) + "</span>" +
+      "<h3>" + esc(place.title) + "</h3>";
+    if (place.image) {
+      html += "<figure class=\"ol-popup-photo\"><img src=\"" + esc(place.image) + "\" alt=\"" + esc(place.title) + "\" loading=\"lazy\">";
+      if (place.imageCredit) {
+        html += "<figcaption>" + (place.imagePage
+          ? "<a href=\"" + esc(place.imagePage) + "\" target=\"_blank\" rel=\"noopener\">" + esc(place.imageCredit) + "</a>"
+          : esc(place.imageCredit)) + "</figcaption>";
+      }
+      html += "</figure>";
+    } else if (place.category === "monument") {
+      html += "<p class=\"ol-popup-photo-missing\">No verified public-domain photograph located for this marker yet.</p>";
+    }
+    html += "<p class=\"ol-popup-coords\">" + esc(formatCoords(place.lat, place.lng)) + "</p>";
+    if (place.blurb && !opts.coordsOnly) html += "<p>" + esc(place.blurb) + "</p>";
+    if (place.tourHref) {
+      html += "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>";
+    }
+    return html;
   }
 
   function setPose(world, yaw, pitch) {
@@ -512,14 +690,10 @@
   function fillDetail(panel, place) {
     if (!panel) return;
     if (!place) {
-      panel.innerHTML = "<p class=\"lede\">Click a pin for a popup about that ground, or use the list.</p>";
+      panel.innerHTML = "<p class=\"lede\">Click a monument for name, coordinates, and a public-domain photo when one is on file.</p>";
       return;
     }
-    panel.innerHTML =
-      "<span class=\"eyebrow\">" + esc(catLabel(place.category)) + "</span>" +
-      "<h3>" + esc(place.title) + "</h3>" +
-      "<p>" + esc(place.blurb) + "</p>" +
-      (place.tourHref ? "<p><a class=\"btn btn-primary btn-sm\" href=\"" + esc(place.tourHref) + "\">" + esc(place.tourLabel || "See the tour") + "</a></p>" : "");
+    panel.innerHTML = placeCardHTML(place);
   }
 
   function mountCss(stage, places, opts) {
@@ -638,7 +812,9 @@
     var stage = document.querySelector("[data-diorama][data-diorama-mode='view']");
     if (!stage) return;
     loadPlaces(function (places) {
-      renderView(stage, places);
+      loadMonuments(function (monuments) {
+        renderView(stage, places, { monuments: monuments });
+      });
     });
   }
 
@@ -686,20 +862,24 @@
       };
 
       var paint = function () {
-        api = renderView(stage, places, {
-          skipAuto: true,
-          onSelect: function (place) {
-            selectedId = place.id;
-            fillForm(place);
+        loadMonuments(function (monuments) {
+          api = renderView(stage, places, {
+            skipAuto: true,
+            monuments: monuments,
+            onSelect: function (place) {
+              if (!places.some(function (p) { return p.id === place.id; })) return;
+              selectedId = place.id;
+              fillForm(place);
+              renderRows();
+            },
+            onMapClick: onMapClick
+          }, function (real, cfg) {
+            if (real) api = real;
+            mapsCfg = cfg;
+            fillMapsForm(cfg);
+            if (selectedId && api && api.select) api.select(selectedId, false);
             renderRows();
-          },
-          onMapClick: onMapClick
-        }, function (real, cfg) {
-          if (real) api = real;
-          mapsCfg = cfg;
-          fillMapsForm(cfg);
-          if (selectedId && api && api.select) api.select(selectedId);
-          renderRows();
+          });
         });
       };
 
