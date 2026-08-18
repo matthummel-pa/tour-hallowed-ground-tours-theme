@@ -94,20 +94,26 @@
   }
 
   var MAP_PIN = "<svg class=\"map-pin-icon\" width=\"14\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" aria-hidden=\"true\"><path d=\"M12 22s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z\" stroke=\"currentColor\" stroke-width=\"2\"/><circle cx=\"12\" cy=\"10\" r=\"2.4\" fill=\"currentColor\"/></svg>";
+  var placePool = [];
 
   function fillList(places, opts) {
     var list = document.querySelector("[data-diorama-list]");
     var visible = places.filter(function (p) {
       return p.visible !== false && p.category !== "monument";
     });
-    if (!list) return visible;
+    if (!list) {
+      placePool = places;
+      return visible;
+    }
+    placePool = places;
     list.innerHTML = "";
     visible.forEach(function (place) {
       var li = document.createElement("li");
       li.className = "place-row";
       li.innerHTML =
         "<button type=\"button\" class=\"place-main\" data-id=\"" + esc(place.id) + "\" data-open-map=\"" + esc(place.id) + "\"><b>" + esc(place.title) + "</b><span>" + esc(catLabel(place.category)) + "</span></button>" +
-        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(place.id) + "\" aria-label=\"View " + esc(place.title) + " on the map\">" + MAP_PIN + "</button>";
+        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(place.id) + "\" aria-label=\"View " + esc(place.title) + " on the map\">" + MAP_PIN + "</button>" +
+        "<button type=\"button\" class=\"place-add-btn\" data-add-itinerary=\"" + esc(place.id) + "\">Add</button>";
       list.appendChild(li);
     });
     return visible;
@@ -725,6 +731,113 @@
     if (el) el.textContent = msg || "";
   }
 
+  function itineraryStopStyle(feature) {
+    var n = String(feature.get("order") || "");
+    var title = String(feature.get("title") || "");
+    return [
+      new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 13,
+          fill: new ol.style.Fill({ color: "rgba(224,190,114,0.95)" }),
+          stroke: new ol.style.Stroke({ color: "#14100a", width: 2 })
+        }),
+        text: new ol.style.Text({
+          text: n,
+          font: "700 12px \"IBM Plex Mono\", monospace",
+          fill: new ol.style.Fill({ color: "#14100a" })
+        }),
+        zIndex: 20
+      }),
+      new ol.style.Style({
+        text: new ol.style.Text({
+          text: title,
+          offsetY: 22,
+          font: "600 11px \"IBM Plex Mono\", monospace",
+          fill: new ol.style.Fill({ color: "#f0d9a0" }),
+          stroke: new ol.style.Stroke({ color: "#07111c", width: 4 })
+        }),
+        zIndex: 21
+      })
+    ];
+  }
+
+  function ensureItineraryMap(cfg) {
+    var stage = document.querySelector("[data-itinerary-map]");
+    if (!stage || !(window.ol && ol.Map)) return null;
+    if (stage._olmap) return stage;
+    cfg = cfg || DEFAULT_MAPS;
+    stage.classList.add("is-ol");
+    stage.innerHTML = "<div class=\"ol-host\" data-itin-ol-host></div>";
+    var host = stage.querySelector("[data-itin-ol-host]");
+    var source = new ol.source.Vector();
+    var view = new ol.View({
+      center: ol.proj.fromLonLat([cfg.center.lng, cfg.center.lat]),
+      zoom: cfg.zoom || 13.4
+    });
+    var map = new ol.Map({
+      target: host,
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM({ attributions: "© OpenStreetMap contributors" })
+        }),
+        new ol.layer.Vector({
+          source: source,
+          style: itineraryStopStyle,
+          zIndex: 20
+        })
+      ],
+      view: view
+    });
+    stage._olmap = map;
+    stage._itinSource = source;
+    map.on("singleclick", function (evt) {
+      var hit = map.forEachFeatureAtPixel(evt.pixel, function (feature) { return feature; });
+      if (hit && hit.get("placeId")) openMapOverlay(hit.get("placeId"));
+    });
+    map.on("pointermove", function (evt) {
+      var hit = map.hasFeatureAtPixel(evt.pixel);
+      map.getTargetElement().style.cursor = hit ? "pointer" : "";
+    });
+    return stage;
+  }
+
+  function updateItineraryMap() {
+    var section = document.querySelector("[data-itinerary-map-section]");
+    var items = readItinerary();
+    if (section) section.hidden = items.length === 0;
+    if (!items.length) return;
+    loadMapsConfig(function (cfg) {
+      var stage = ensureItineraryMap(cfg);
+      if (!stage || !stage._itinSource || !stage._olmap) return;
+      var source = stage._itinSource;
+      source.clear();
+      items.forEach(function (stop, i) {
+        if (!isFinite(Number(stop.lat)) || !isFinite(Number(stop.lng))) return;
+        source.addFeature(new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([Number(stop.lng), Number(stop.lat)])),
+          placeId: stop.id,
+          title: stop.title,
+          order: i + 1
+        }));
+      });
+      var fit = function () {
+        stage._olmap.updateSize();
+        if (!source.getFeatures().length) return;
+        var extent = source.getExtent();
+        if (!extent || !isFinite(extent[0])) return;
+        stage._olmap.getView().fit(extent, {
+          padding: [56, 56, 56, 56],
+          maxZoom: 15.2,
+          duration: 450
+        });
+      };
+      requestAnimationFrame(function () {
+        fit();
+        setTimeout(fit, 160);
+      });
+    });
+  }
+
   function renderItinerary() {
     var list = document.querySelector("[data-itinerary-list]");
     var items = readItinerary();
@@ -743,6 +856,7 @@
     });
     var empty = document.querySelector("[data-itinerary-empty]");
     if (empty) empty.hidden = items.length > 0;
+    updateItineraryMap();
   }
 
   function addToItinerary(place) {
@@ -980,7 +1094,7 @@
         if (!addBtn) return;
         e.preventDefault();
         var host = document.querySelector("[data-diorama]");
-        var pool = (host && host._allPlaces) || [];
+        var pool = (host && host._allPlaces) || placePool || [];
         var place = pool.filter(function (p) { return p.id === addBtn.getAttribute("data-add-itinerary"); })[0];
         if (place) addToItinerary(place);
       });

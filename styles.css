@@ -1112,6 +1112,22 @@ body.modal-locked{ overflow:hidden; }
   padding: 0;
   color: var(--gold-500);
 }
+.place-add-btn{
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0.55rem 0.7rem;
+  font: 600 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-300);
+}
+[data-itinerary-map].diorama-stage.is-ol{
+  min-height: 0;
+}
+[data-itinerary-map] .ol-host{
+  height: min(62vh, 560px);
+  min-height: 360px;
+}
 .inline-map-btn{
   display: inline-flex;
   align-items: center;
