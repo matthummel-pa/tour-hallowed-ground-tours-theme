@@ -30,7 +30,7 @@ CTAs already in use: "Book This Tour", "See All 5 Tours", "Meet Your Guides", "R
 
 Palette: slate blue, antique gold, parchment cream, ink. Distinct from the sister food-tour company's forest green and amber.
 
-Fonts: Playfair Display (bold high-contrast serif on all headings, self-hosted), Atkinson Hyperlegible (UI), IBM Plex Mono (labels). No sans-serif on headings.
+Fonts: Archivo Black (heavy display sans on all headings, self-hosted), Atkinson Hyperlegible (UI), IBM Plex Mono (labels).
 
 Reuse existing classes (`eyebrow`, `btn`, `btn-primary`, `tour-card`, `section-alt`, chips). Do not add a new visual system.
 

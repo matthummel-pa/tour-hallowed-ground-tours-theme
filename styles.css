@@ -1,18 +1,10 @@
-/* Playfair Display is self-hosted so headings stay a high-contrast bold serif
-   even if Google Fonts is blocked. SIL Open Font License. */
+/* Archivo Black is self-hosted so headings stay a heavy sans even if Google Fonts is blocked. SIL Open Font License. */
 @font-face{
-  font-family:"Playfair Display";
+  font-family:"Archivo Black";
   font-style:normal;
-  font-weight:700 900;
+  font-weight:100 900;
   font-display:swap;
-  src:url("fonts/playfair-display-latin.woff2") format("woff2");
-}
-@font-face{
-  font-family:"Playfair Display";
-  font-style:italic;
-  font-weight:700 900;
-  font-display:swap;
-  src:url("fonts/playfair-display-latin-italic.woff2") format("woff2");
+  src:url("fonts/archivo-black-latin.woff2") format("woff2");
 }
 
 /* ============================================
@@ -72,8 +64,8 @@
   --color-on-gold: #14100a;
 
   --font-ui:'Atkinson Hyperlegible', system-ui, sans-serif;
-  --font-serif:'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-head:'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-serif:Georgia, 'Times New Roman', serif;
+  --font-head:'Archivo Black', 'Arial Black', Impact, sans-serif;
   --font-mono:'IBM Plex Mono','Courier New', monospace;
 
   --radius-sm:2px;
@@ -132,9 +124,9 @@ h1,h2,h3,h4,
 .hero-stat b{
   margin:0;
   font-family:var(--font-head) !important;
-  font-weight:800;
+  font-weight:400;
   font-style:normal;
-  letter-spacing:-0.02em;
+  letter-spacing:-0.03em;
   color:var(--parchment-50);
   text-wrap:balance;
   text-transform:none;
@@ -413,7 +405,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 }
 .hero-title{
   font-family: var(--font-head);
-  font-weight: 800;
+  font-weight: 400;
   font-size: clamp(2.8rem, 7.5vw, 5.6rem);
   line-height:1.05;
   max-width:14ch;
@@ -423,8 +415,8 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 }
 .hero-title em{
   font-family:var(--font-head);
-  font-style:italic;
-  font-weight:800;
+  font-style:normal;
+  font-weight:400;
   letter-spacing:-0.03em;
   color: var(--brick-soft);
   display:inline;
