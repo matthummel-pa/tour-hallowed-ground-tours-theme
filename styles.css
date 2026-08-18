@@ -1070,6 +1070,16 @@ body.modal-locked{ overflow:hidden; }
   align-items:start;
 }
 .story-map-col{ min-width:0; }
+@media (min-width:1040px){
+  .story-map-col{
+    position: sticky;
+    top: calc(var(--header-h) + var(--rail-h) + 10px);
+    max-height: calc(100vh - var(--header-h) - var(--rail-h) - 24px);
+    overflow: auto;
+    align-self: start;
+  }
+  .story-map-sticky{ position: static; top: auto; }
+}
 .story-map-sticky{
   position:sticky;
   top: calc(var(--header-h) + 10px);
@@ -1377,6 +1387,7 @@ body.modal-locked{ overflow:hidden; }
   overflow: visible;
 }
 .ol-popup{
+  z-index: 20;
   min-width: 240px;
   max-width: min(320px, 82vw);
   background: var(--color-surface);

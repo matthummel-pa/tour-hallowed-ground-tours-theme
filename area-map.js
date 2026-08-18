@@ -575,7 +575,10 @@
       function applyBeat(beat) {
         beats.forEach(function (el) { el.classList.toggle("is-active", el === beat); });
         var viewName = beat.getAttribute("data-story-view");
-        storyFocus(viewName === "field" ? { view: "field" } : { ids: parseStoryIds(beat.getAttribute("data-story-places")) });
+        storyFocus(viewName === "field" ? { view: "field" } : {
+          ids: parseStoryIds(beat.getAttribute("data-story-places")),
+          zoom: beat.getAttribute("data-story-zoom") ? Number(beat.getAttribute("data-story-zoom")) : undefined
+        });
       }
       function pick() {
         if (stage._storyManualUntil && Date.now() < stage._storyManualUntil) return;
