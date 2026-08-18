@@ -135,7 +135,7 @@ Canonical tags in the HTML still point at the GitHub Pages path so SEO stays on 
               (OpenFreeMap MVT)          + Commons PD
 ```
 
-No bundler. No framework runtime. Open a file or any static server. Fonts load from Google Fonts: **Newsreader** (all headings and body serif), **Atkinson Hyperlegible** (UI), **IBM Plex Mono** (labels).
+No bundler. No framework runtime. Open a file or any static server. Fonts load from Google Fonts: **Fraunces** (bold display serif on all headings), **Atkinson Hyperlegible** (UI), **IBM Plex Mono** (labels).
 
 Map data:
 
