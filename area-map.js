@@ -309,6 +309,27 @@
       "<p><span class=\"leg-swatch leg-area\"></span> Popular area</p>";
     host.appendChild(legend);
 
+    var filterHost = document.createElement("div");
+    filterHost.className = "ol-filters";
+    filterHost.setAttribute("data-map-filters", "");
+    filterHost.setAttribute("role", "group");
+    filterHost.setAttribute("aria-label", "Show on the map");
+    [
+      ["monument", "Monuments"],
+      ["tour", "Tour locations"],
+      ["building", "Buildings"],
+      ["area", "Popular areas"]
+    ].forEach(function (pair) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "is-on";
+      chip.setAttribute("data-filter", pair[0]);
+      chip.setAttribute("aria-pressed", "true");
+      chip.textContent = pair[1];
+      filterHost.appendChild(chip);
+    });
+    host.appendChild(filterHost);
+
     function setBasemap(mode) {
       var satOn = mode === "sat";
       roads.setVisible(!satOn);
@@ -425,8 +446,10 @@
     function placeMatchesFilter(place) {
       var box = document.querySelector("[data-map-filters]");
       if (box) {
-        box.querySelectorAll("input[type=checkbox][data-filter]").forEach(function (input) {
-          filters[input.getAttribute("data-filter")] = input.checked;
+        box.querySelectorAll("[data-filter]").forEach(function (el) {
+          var key = el.getAttribute("data-filter");
+          if (el.tagName === "INPUT") filters[key] = el.checked;
+          else filters[key] = el.getAttribute("aria-pressed") === "true";
         });
       }
       return placeKinds(place).some(function (kind) { return filters[kind]; });
@@ -495,6 +518,16 @@
     var filterBox = document.querySelector("[data-map-filters]");
     if (filterBox && !filterBox.dataset.bound) {
       filterBox.dataset.bound = "1";
+      filterBox.addEventListener("click", function (e) {
+        var btn = e.target.closest("button[data-filter]");
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var on = btn.getAttribute("aria-pressed") !== "true";
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.classList.toggle("is-on", on);
+        syncMarkers(places);
+      });
       filterBox.addEventListener("change", function () {
         syncMarkers(places);
       });
@@ -503,121 +536,6 @@
     syncMarkers(places);
     stage._hgSelect = select;
     stage._refreshPlaces = syncMarkers;
-
-    function parseStoryIds(str) {
-      return String(str || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean);
-    }
-
-    function storyFocus(spec) {
-      hidePopup(false);
-      if (!spec || spec.view === "field") {
-        selectedId = null;
-        pins.changed();
-        monumentLayer.changed();
-        highlight(document, "");
-        zoomedIn = false;
-        if (reduce) {
-          view.setCenter(fieldView.center);
-          view.setZoom(fieldView.zoom);
-          view.setRotation(fieldView.rotation);
-        } else {
-          view.animate({
-            center: fieldView.center,
-            zoom: fieldView.zoom,
-            rotation: fieldView.rotation,
-            duration: 800
-          });
-        }
-        return;
-      }
-      var list = (spec.ids || []).map(function (id) {
-        return allPlaces.filter(function (p) { return p.id === id; })[0];
-      }).filter(function (p) {
-        return p && isFinite(Number(p.lat)) && isFinite(Number(p.lng));
-      });
-      if (!list.length) return;
-      selectedId = list[0].id;
-      pins.changed();
-      monumentLayer.changed();
-      highlight(document, selectedId);
-      fillDetail(detail, list[0]);
-      zoomedIn = true;
-      if (list.length === 1) {
-        var center = ol.proj.fromLonLat([Number(list[0].lng), Number(list[0].lat)]);
-        var z = spec.zoom || 15.1;
-        if (reduce) {
-          view.setCenter(center);
-          view.setZoom(z);
-        } else {
-          view.animate({ center: center, zoom: z, duration: 850 });
-        }
-        return;
-      }
-      var coords = list.map(function (p) {
-        return ol.proj.fromLonLat([Number(p.lng), Number(p.lat)]);
-      });
-      var extent = ol.extent.boundingExtent(coords);
-      extent = ol.extent.buffer(extent, 320);
-      view.fit(extent, {
-        duration: reduce ? 0 : 850,
-        padding: [56, 56, 56, 56],
-        maxZoom: spec.zoom || 15.3
-      });
-    }
-
-    stage._hgStoryFocus = storyFocus;
-
-    function bindStoryScroll() {
-      var beats = document.querySelectorAll("[data-story-beat]");
-      if (!beats.length || !window.IntersectionObserver) return;
-      var lastKey = "";
-      var ratios = [];
-      function applyBeat(beat) {
-        beats.forEach(function (el) { el.classList.toggle("is-active", el === beat); });
-        var viewName = beat.getAttribute("data-story-view");
-        storyFocus(viewName === "field" ? { view: "field" } : {
-          ids: parseStoryIds(beat.getAttribute("data-story-places")),
-          zoom: beat.getAttribute("data-story-zoom") ? Number(beat.getAttribute("data-story-zoom")) : undefined
-        });
-      }
-      function pick() {
-        if (stage._storyManualUntil && Date.now() < stage._storyManualUntil) return;
-        var i;
-        var bestI = -1;
-        var bestR = 0.16;
-        for (i = 0; i < beats.length; i++) {
-          if ((ratios[i] || 0) > bestR) {
-            bestR = ratios[i];
-            bestI = i;
-          }
-        }
-        if (bestI < 0) return;
-        var beat = beats[bestI];
-        var key = beat.getAttribute("data-story-view") || beat.getAttribute("data-story-places") || String(bestI);
-        if (key === lastKey) return;
-        lastKey = key;
-        applyBeat(beat);
-      }
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          var idx = Array.prototype.indexOf.call(beats, en.target);
-          if (idx >= 0) ratios[idx] = en.intersectionRatio;
-        });
-        pick();
-      }, { root: null, rootMargin: "-18% 0px -42% 0px", threshold: [0, 0.12, 0.25, 0.4, 0.6, 0.85, 1] });
-      beats.forEach(function (b) { io.observe(b); });
-      var spine = document.querySelector("[data-story-spine]");
-      if (spine && !spine.dataset.bound) {
-        spine.dataset.bound = "1";
-        spine.addEventListener("click", function (e) {
-          var btn = e.target.closest("button[data-id]");
-          if (!btn || !stage._hgSelect) return;
-          stage._storyManualUntil = Date.now() + 4500;
-          stage._hgSelect(btn.getAttribute("data-id"));
-        });
-      }
-    }
-    bindStoryScroll();
 
     map.on("singleclick", function (evt) {
       var hit = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
@@ -635,7 +553,6 @@
           return;
         }
         var id = cluster && cluster[0] ? cluster[0].get("placeId") : hit.get("placeId");
-        stage._storyManualUntil = Date.now() + 4500;
         select(id);
         return;
       }
@@ -814,9 +731,10 @@
 
   function renderItinerary() {
     var list = document.querySelector("[data-itinerary-list]");
-    var count = document.querySelector("[data-itinerary-count]");
     var items = readItinerary();
-    if (count) count.textContent = String(items.length);
+    document.querySelectorAll("[data-itinerary-count]").forEach(function (count) {
+      count.textContent = String(items.length);
+    });
     if (!list) return;
     list.innerHTML = "";
     items.forEach(function (stop, i) {
@@ -854,6 +772,7 @@
     writeItinerary(items);
     renderItinerary();
     itineraryStatus("Added " + place.title + ".");
+    showMapTab("list");
   }
 
   function removeFromItinerary(id) {
@@ -953,6 +872,29 @@
     win.document.close();
     win.focus();
     win.print();
+  }
+
+  function showMapTab(name) {
+    var root = document.querySelector("[data-map-under]");
+    if (!root || !name) return;
+    root.querySelectorAll("[data-map-tab]").forEach(function (t) {
+      var on = t.getAttribute("data-map-tab") === name;
+      t.classList.toggle("is-active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    root.querySelectorAll("[data-map-panel]").forEach(function (p) {
+      p.hidden = p.getAttribute("data-map-panel") !== name;
+    });
+  }
+
+  function bindMapTabs() {
+    var root = document.querySelector("[data-map-under]");
+    if (!root || root.dataset.tabBound) return;
+    root.dataset.tabBound = "1";
+    root.addEventListener("click", function (e) {
+      var tab = e.target.closest("[data-map-tab]");
+      if (tab) showMapTab(tab.getAttribute("data-map-tab"));
+    });
   }
 
   function bindItineraryUi() {
@@ -1085,7 +1027,7 @@
     root.querySelectorAll(".dio-pin").forEach(function (el) {
       el.classList.toggle("is-active", el.getAttribute("data-id") === id);
     });
-    root.querySelectorAll("[data-diorama-list] button, [data-story-spine] button[data-id]").forEach(function (el) {
+    root.querySelectorAll("[data-diorama-list] button").forEach(function (el) {
       el.classList.toggle("is-active", el.getAttribute("data-id") === id);
     });
   }
@@ -1217,10 +1159,8 @@
     loadPlaces(function (places) {
       loadMonuments(function (monuments) {
         bindItineraryUi();
-        renderView(stage, places, {
-          monuments: monuments,
-          skipAuto: !!document.querySelector("[data-story-beat]")
-        });
+        bindMapTabs();
+        renderView(stage, places, { monuments: monuments });
       });
     });
   }

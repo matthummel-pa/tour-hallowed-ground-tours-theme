@@ -1064,97 +1064,74 @@ body.modal-locked{ overflow:hidden; }
    Field diorama (area page) + owner admin
    Sage: sections/area-map.blade.php + ACF area_map_places
 ============================================ */
-.story-map-layout{
-  display:grid;
-  gap:1.5rem;
-  align-items:start;
+.diorama-layout--stack{
+  grid-template-columns: 1fr;
 }
-.story-map-col{ min-width:0; }
-@media (min-width:1040px){
-  .story-map-col{
-    position: sticky;
-    top: calc(var(--header-h) + var(--rail-h) + 10px);
-    max-height: calc(100vh - var(--header-h) - var(--rail-h) - 24px);
-    overflow: auto;
-    align-self: start;
-  }
-  .story-map-sticky{ position: static; top: auto; }
-}
-.story-map-sticky{
-  position:sticky;
-  top: calc(var(--header-h) + 10px);
-  z-index: 4;
-}
-@media (min-width:900px){
-  .story-map-sticky{ top: calc(var(--header-h) + var(--rail-h) + 10px); }
-}
-@media (min-width:1040px){
-  .story-map-layout{
-    grid-template-columns: minmax(0,1.2fr) minmax(300px,0.8fr);
-  }
-}
-.story-map-layout .diorama-stage.is-ol{
-  margin-bottom: 0.85rem;
-}
-@media (max-width:1039px){
-  .story-map-layout .ol-host{
-    height: 42vh;
-    min-height: 280px;
-  }
-}
-.story-map-tools{
+.map-under-card{
   background: var(--color-surface);
-  border:1px solid var(--color-border);
-  padding: 0.85rem 0.9rem 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 1.15rem 1.25rem;
   clip-path: var(--ticket);
 }
-.story-map-tools .map-filters{
-  margin-bottom: 0.75rem;
-}
-.story-spine{
-  min-width: 0;
-}
-.story-beat{
-  padding: 1.15rem 0 1.6rem;
-  border-left: 2px solid var(--color-border);
-  padding-left: 1.1rem;
-  min-height: min(52vh, 420px);
-  color: var(--color-ink-soft);
-}
-.story-beat h3{
-  font-size: clamp(1.45rem, 2.6vw, 2rem);
-  color: var(--parchment-50);
-  margin: 0.25rem 0 0.7rem;
-}
-.story-beat p{ margin: 0 0 0.85rem; }
-.story-beat.is-active{
-  border-left-color: var(--gold-500);
-}
-.story-beat.is-active h3{ color: var(--gold-300); }
-.story-pins{
+.map-tabs{
   display:flex;
-  flex-wrap:wrap;
-  gap:0.4rem;
-  margin: 0.35rem 0 0;
+  gap: 0;
+  margin: 0 -1.15rem 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
-.story-pins button{
-  background: var(--color-surface-2);
-  border:1px solid var(--color-border);
-  color: var(--color-ink);
-  padding:0.4rem 0.65rem;
-  cursor:pointer;
-  font-size:0.82rem;
+.map-tab{
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-soft);
+  font: 600 0.82rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.95rem 0.75rem 0.85rem;
+  cursor: pointer;
 }
-.story-pins button.is-active,
-.story-pins button:hover{
+.map-tab.is-active{
+  color: var(--gold-300);
+  box-shadow: inset 0 -2px 0 var(--gold-500);
+}
+.map-panel h3{
+  font-size: 1.35rem;
+  margin: 0.2rem 0 0.5rem;
+}
+.map-under-card .itinerary-card{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  clip-path: none;
+}
+.ol-filters{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+  max-width: min(58%, 420px);
+  pointer-events: auto;
+}
+.ol-filters button{
+  border: 1px solid var(--color-border);
+  background: rgba(7,17,28,0.9);
+  color: var(--parchment-100);
+  font: 600 0.68rem/1 var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.55rem;
+  cursor: pointer;
+}
+.ol-filters button.is-on{
+  background: var(--gold-500);
+  color: #14100a;
   border-color: var(--gold-500);
-  background: #1a2734;
-}
-.itinerary-band{
-  max-width: 720px;
-}
-.itinerary-band h2{
-  margin: 0.2rem 0 0.55rem;
 }
 .itin-mail-wrap{
   margin: 0.4rem 0 0.6rem;
@@ -1179,6 +1156,14 @@ body.modal-locked{ overflow:hidden; }
 @media (min-width:1040px){
   .diorama-layout{
     grid-template-columns: minmax(0,1.45fr) minmax(280px,0.7fr);
+  }
+  .diorama-layout--stack{
+    grid-template-columns: 1fr;
+  }
+  .diorama-layout--stack .diorama-stage,
+  .diorama-layout--stack .map-under-card{
+    grid-column: 1;
+    grid-row: auto;
   }
   .diorama-stage{ grid-column: 1; grid-row: 1; }
   .diorama-panel{ grid-column: 2; grid-row: 1; }
