@@ -1,3 +1,20 @@
+/* Playfair Display is self-hosted so headings stay a high-contrast bold serif
+   even if Google Fonts is blocked. SIL Open Font License. */
+@font-face{
+  font-family:"Playfair Display";
+  font-style:normal;
+  font-weight:700 900;
+  font-display:swap;
+  src:url("fonts/playfair-display-latin.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Playfair Display";
+  font-style:italic;
+  font-weight:700 900;
+  font-display:swap;
+  src:url("fonts/playfair-display-latin-italic.woff2") format("woff2");
+}
+
 /* ============================================
    HALLOWED GROUND — concept starter for Sage / Roots / WooCommerce
    Dark battlefield + after-dark lantern system.
@@ -55,10 +72,9 @@
   --color-on-gold: #14100a;
 
   --font-ui:'Atkinson Hyperlegible', system-ui, sans-serif;
-  --font-serif:'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-head:'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-serif:'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-head:'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-mono:'IBM Plex Mono','Courier New', monospace;
-  --head-soft: "SOFT" 0, "WONK" 0;
 
   --radius-sm:2px;
   --radius-md:3px;
@@ -106,19 +122,25 @@ body::before{
 
 img{ max-width:100%; display:block; }
 a{ color:inherit; }
-h1,h2,h3,h4{
+h1,h2,h3,h4,
+.hero-title,
+.brand-name,
+.page-intro h1,
+.section-head h2,
+.faq-q,
+.path-card b,
+.hero-stat b{
   margin:0;
-  font-family:var(--font-head);
-  font-optical-sizing:auto;
+  font-family:var(--font-head) !important;
   font-weight:800;
-  font-variation-settings: var(--head-soft);
+  font-style:normal;
   letter-spacing:-0.02em;
   color:var(--parchment-50);
   text-wrap:balance;
   text-transform:none;
   line-height:1.12;
 }
-h1,h2{ line-height:1.06; }
+h1,h2,.hero-title,.page-intro h1,.section-head h2{ line-height:1.08; }
 p{ margin:0; }
 .lede{ color: var(--color-ink-soft); max-width: 62ch; }
 ul{ margin:0; padding:0; list-style:none; }
@@ -254,7 +276,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
   animation: compass 48s linear infinite;
 }
 @keyframes compass{ to{ transform: rotate(360deg); } }
-.brand-name{ font-family: var(--font-head); font-optical-sizing:auto; font-weight:800; font-variation-settings: var(--head-soft); font-size:1.28rem; letter-spacing:-0.02em; }
+.brand-name{ font-size:1.28rem; letter-spacing:-0.02em; }
 .brand-sub{ font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-300); }
 
 .main-nav{ display:none; }
@@ -391,9 +413,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 }
 .hero-title{
   font-family: var(--font-head);
-  font-optical-sizing: auto;
   font-weight: 800;
-  font-variation-settings: var(--head-soft);
   font-size: clamp(2.8rem, 7.5vw, 5.6rem);
   line-height:1.05;
   max-width:14ch;
@@ -404,9 +424,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .hero-title em{
   font-family:var(--font-head);
   font-style:italic;
-  font-optical-sizing:auto;
   font-weight:800;
-  font-variation-settings: var(--head-soft);
   letter-spacing:-0.03em;
   color: var(--brick-soft);
   display:inline;
@@ -429,13 +447,11 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .path-card:hover{ transform:translateY(-3px) rotate(-0.3deg); border-color: var(--gold-500); }
 .path-card b{
   display:block; font-size:1.2rem; margin-bottom:0.25rem;
-  font-family: var(--font-head); font-optical-sizing:auto; font-weight:800; font-variation-settings: var(--head-soft); letter-spacing:-0.02em;
 }
 .path-card span{ display:block; font-size:0.84rem; color:rgba(247,241,227,0.72); }
 .path-card.is-lantern{ border-color: rgba(201,160,106,0.28); }
 
 .hero-stats{ display:flex; flex-wrap:wrap; gap:1.6rem 2.2rem; }
-.hero-stat b{ display:block; font-size:1.7rem; font-family:var(--font-head); font-optical-sizing:auto; font-weight:800; font-variation-settings: var(--head-soft); color:var(--gold-300); letter-spacing:-0.02em; }
 .hero-stat span{ font-size:0.74rem; color:rgba(247,241,227,0.68); text-transform:uppercase; letter-spacing:0.08em; }
 
 .marquee{
@@ -477,9 +493,7 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .section-head{ max-width:680px; margin-bottom:2.5rem; }
 .section-head h2{
   font-family: var(--font-head);
-  font-optical-sizing: auto;
   font-weight: 800;
-  font-variation-settings: var(--head-soft);
   font-size:clamp(2.05rem,4.6vw,3.2rem);
   margin-block:0.5rem 0.85rem;
   line-height:1.08;
@@ -736,7 +750,6 @@ section{ scroll-margin-top: calc(var(--header-h) + var(--rail-h) + 12px); }
 .faq-q{
   width:100%; display:flex; align-items:center; justify-content:space-between; gap:1rem;
   padding:1.1rem 1.3rem; background:none; border:none; cursor:pointer; text-align:left;
-  font-family: var(--font-head); font-optical-sizing:auto; font-size:1.08rem; font-weight:800; font-variation-settings: var(--head-soft); letter-spacing:-0.02em; color:var(--parchment-50);
 }
 .faq-q .plus{ flex-shrink:0; width:22px; height:22px; position:relative; }
 .faq-q .plus::before, .faq-q .plus::after{
@@ -998,9 +1011,7 @@ body.modal-locked{ overflow:hidden; }
 .page-intro .eyebrow{ color: var(--gold-300); }
 .page-intro h1{
   font-family: var(--font-head);
-  font-optical-sizing: auto;
   font-weight: 800;
-  font-variation-settings: var(--head-soft);
   font-size: clamp(2.3rem, 5.4vw, 3.8rem);
   margin-block:0.5rem 0.9rem;
   max-width:18ch;
