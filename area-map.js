@@ -504,6 +504,118 @@
     stage._hgSelect = select;
     stage._refreshPlaces = syncMarkers;
 
+    function parseStoryIds(str) {
+      return String(str || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+
+    function storyFocus(spec) {
+      hidePopup(false);
+      if (!spec || spec.view === "field") {
+        selectedId = null;
+        pins.changed();
+        monumentLayer.changed();
+        highlight(document, "");
+        zoomedIn = false;
+        if (reduce) {
+          view.setCenter(fieldView.center);
+          view.setZoom(fieldView.zoom);
+          view.setRotation(fieldView.rotation);
+        } else {
+          view.animate({
+            center: fieldView.center,
+            zoom: fieldView.zoom,
+            rotation: fieldView.rotation,
+            duration: 800
+          });
+        }
+        return;
+      }
+      var list = (spec.ids || []).map(function (id) {
+        return allPlaces.filter(function (p) { return p.id === id; })[0];
+      }).filter(function (p) {
+        return p && isFinite(Number(p.lat)) && isFinite(Number(p.lng));
+      });
+      if (!list.length) return;
+      selectedId = list[0].id;
+      pins.changed();
+      monumentLayer.changed();
+      highlight(document, selectedId);
+      fillDetail(detail, list[0]);
+      zoomedIn = true;
+      if (list.length === 1) {
+        var center = ol.proj.fromLonLat([Number(list[0].lng), Number(list[0].lat)]);
+        var z = spec.zoom || 15.1;
+        if (reduce) {
+          view.setCenter(center);
+          view.setZoom(z);
+        } else {
+          view.animate({ center: center, zoom: z, duration: 850 });
+        }
+        return;
+      }
+      var coords = list.map(function (p) {
+        return ol.proj.fromLonLat([Number(p.lng), Number(p.lat)]);
+      });
+      var extent = ol.extent.boundingExtent(coords);
+      extent = ol.extent.buffer(extent, 320);
+      view.fit(extent, {
+        duration: reduce ? 0 : 850,
+        padding: [56, 56, 56, 56],
+        maxZoom: spec.zoom || 15.3
+      });
+    }
+
+    stage._hgStoryFocus = storyFocus;
+
+    function bindStoryScroll() {
+      var beats = document.querySelectorAll("[data-story-beat]");
+      if (!beats.length || !window.IntersectionObserver) return;
+      var lastKey = "";
+      var ratios = [];
+      function applyBeat(beat) {
+        beats.forEach(function (el) { el.classList.toggle("is-active", el === beat); });
+        var viewName = beat.getAttribute("data-story-view");
+        storyFocus(viewName === "field" ? { view: "field" } : { ids: parseStoryIds(beat.getAttribute("data-story-places")) });
+      }
+      function pick() {
+        if (stage._storyManualUntil && Date.now() < stage._storyManualUntil) return;
+        var i;
+        var bestI = -1;
+        var bestR = 0.16;
+        for (i = 0; i < beats.length; i++) {
+          if ((ratios[i] || 0) > bestR) {
+            bestR = ratios[i];
+            bestI = i;
+          }
+        }
+        if (bestI < 0) return;
+        var beat = beats[bestI];
+        var key = beat.getAttribute("data-story-view") || beat.getAttribute("data-story-places") || String(bestI);
+        if (key === lastKey) return;
+        lastKey = key;
+        applyBeat(beat);
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          var idx = Array.prototype.indexOf.call(beats, en.target);
+          if (idx >= 0) ratios[idx] = en.intersectionRatio;
+        });
+        pick();
+      }, { root: null, rootMargin: "-18% 0px -42% 0px", threshold: [0, 0.12, 0.25, 0.4, 0.6, 0.85, 1] });
+      beats.forEach(function (b) { io.observe(b); });
+      var spine = document.querySelector("[data-story-spine]");
+      if (spine && !spine.dataset.bound) {
+        spine.dataset.bound = "1";
+        spine.addEventListener("click", function (e) {
+          var btn = e.target.closest("button[data-id]");
+          if (!btn || !stage._hgSelect) return;
+          stage._storyManualUntil = Date.now() + 4500;
+          stage._hgSelect(btn.getAttribute("data-id"));
+        });
+      }
+    }
+    bindStoryScroll();
+
     map.on("singleclick", function (evt) {
       var hit = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
         if (layer === pins || layer === monumentLayer) return feature;
@@ -520,6 +632,7 @@
           return;
         }
         var id = cluster && cluster[0] ? cluster[0].get("placeId") : hit.get("placeId");
+        stage._storyManualUntil = Date.now() + 4500;
         select(id);
         return;
       }
@@ -969,7 +1082,7 @@
     root.querySelectorAll(".dio-pin").forEach(function (el) {
       el.classList.toggle("is-active", el.getAttribute("data-id") === id);
     });
-    root.querySelectorAll("[data-diorama-list] button").forEach(function (el) {
+    root.querySelectorAll("[data-diorama-list] button, [data-story-spine] button[data-id]").forEach(function (el) {
       el.classList.toggle("is-active", el.getAttribute("data-id") === id);
     });
   }
@@ -1101,7 +1214,10 @@
     loadPlaces(function (places) {
       loadMonuments(function (monuments) {
         bindItineraryUi();
-        renderView(stage, places, { monuments: monuments });
+        renderView(stage, places, {
+          monuments: monuments,
+          skipAuto: !!document.querySelector("[data-story-beat]")
+        });
       });
     });
   }

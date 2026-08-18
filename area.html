@@ -232,94 +232,128 @@
 
   <!-- sage:begin resources/views/sections/area-map.blade.php
        Places: ACF options area_map_places or CPT area_place (title, blurb, category, x, z, elev, tour, visible)
+       Story beats: data-story-places ids must match area_place / area-map.json
   -->
   <section class="section" id="field-map">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">The Ground</span>
         <h2>The field, from the air.</h2>
-        <p>An OpenLayers map of Gettysburg, PA. Numbered gold circles are clusters — a 4 means four monuments sit on top of each other at this zoom; click to spread them. Filter monuments, tour locations, buildings, and popular ground. Switch to satellite for aerial tiles. Build a field itinerary and save it as a PDF, or ask us to mail a copy.</p>
+        <p>Scroll the ground in the order the fight moved: the ridges, the Round Tops, then downtown — the map follows that walk.</p>
       </div>
-      <div class="diorama-layout reveal">
-        <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive OpenLayers map of Gettysburg"></div>
-        <aside class="diorama-panel">
-          <div data-diorama-detail>
-            <p class="lede">Click a cluster or pin. Popups carry the name, coordinates, and a public-domain photo when we have one.</p>
+      <div class="story-map-layout reveal">
+        <div class="story-map-col">
+          <div class="story-map-sticky">
+            <div class="diorama-stage" data-diorama data-diorama-mode="view" aria-label="Interactive OpenLayers map of Gettysburg"></div>
           </div>
-          <fieldset class="map-filters" data-map-filters>
-            <legend>Show on the map</legend>
-            <label><input type="checkbox" data-filter="monument" checked> Monuments</label>
-            <label><input type="checkbox" data-filter="tour" checked> Tour locations</label>
-            <label><input type="checkbox" data-filter="building" checked> Significant buildings</label>
-            <label><input type="checkbox" data-filter="area" checked> Popular areas</label>
-          </fieldset>
-          <label class="dio-search-label" for="monument-search">Find a monument</label>
-          <input id="monument-search" class="dio-search" type="search" data-monument-search placeholder="Pennsylvania Memorial, 20th Maine…" autocomplete="off">
-          <div class="dio-place-list" data-monument-hits></div>
-          <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
-        </aside>
-        <div class="diorama-under">
-          <div class="field-index">
-            <p class="dio-list-kicker">Tour geography</p>
-            <h3>Names we use on the field.</h3>
-            <p class="lede">Click a tour place to jump the map. Add stops to your field list from a popup.</p>
-            <ul class="dio-place-list" data-diorama-list></ul>
-          </div>
-          <div class="itinerary-card" data-itinerary>
-            <span class="eyebrow">Your field list</span>
-            <h3>Itinerary <span data-itinerary-count>0</span></h3>
-            <p class="lede" data-itinerary-empty>Add stops from a popup. Save a PDF on this device, print it, or ask us to mail a copy.</p>
-            <ol class="itin-list" data-itinerary-list></ol>
-            <div class="itin-actions">
-              <button type="button" class="btn btn-primary btn-sm" data-itinerary-pdf>Save as PDF</button>
-              <button type="button" class="btn btn-ghost btn-sm" data-itinerary-print>Print</button>
+          <aside class="story-map-tools">
+            <fieldset class="map-filters" data-map-filters>
+              <legend>Show on the map</legend>
+              <label><input type="checkbox" data-filter="monument" checked> Monuments</label>
+              <label><input type="checkbox" data-filter="tour" checked> Tour locations</label>
+              <label><input type="checkbox" data-filter="building" checked> Significant buildings</label>
+              <label><input type="checkbox" data-filter="area" checked> Popular areas</label>
+            </fieldset>
+            <label class="dio-search-label" for="monument-search">Find a monument</label>
+            <input id="monument-search" class="dio-search" type="search" data-monument-search placeholder="Pennsylvania Memorial, 20th Maine…" autocomplete="off">
+            <div class="dio-place-list" data-monument-hits></div>
+            <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
+          </aside>
+        </div>
+        <div class="story-spine" data-story-spine>
+          <article class="story-beat is-active" data-story-beat data-story-view="field">
+            <span class="eyebrow">July 1–3, 1863</span>
+            <h3>Where the Battle of Gettysburg was fought</h3>
+            <p>The Battle of Gettysburg was fought July 1&ndash;3, 1863, across the ridges, fields, and hills that surround the borough of Gettysburg, Pennsylvania. Today that ground is preserved as <strong>Gettysburg National Military Park</strong>, one of the most visited Civil War sites in the country, with more than 1,300 monuments spread across roughly 6,000 acres. Our tours are designed to make sense of that landscape &mdash; not just the maps, but the actual rises and swales where the fighting turned.</p>
+          </article>
+          <article class="story-beat" data-story-beat data-story-places="seminary-ridge,cemetery-ridge,mcpherson-ridge,high-water-mark">
+            <span class="eyebrow">The parallel lines</span>
+            <h3>Seminary &amp; Cemetery Ridge</h3>
+            <p>Two long parallel ridges shaped the battle. <strong>Seminary Ridge</strong>, marked by the cupola of the old Lutheran seminary, became the Confederate line after the first day's fighting. Facing it, <strong>Cemetery Ridge</strong> anchored the Union &ldquo;fishhook&rdquo; and became the target of Pickett's Charge on July 3. Our Battlefield Highlights Walking Tour crosses Cemetery Ridge and McPherson Ridge to connect all three days into a single, walkable story.</p>
+            <div class="story-pins">
+              <button type="button" data-id="seminary-ridge">Seminary Ridge</button>
+              <button type="button" data-id="cemetery-ridge">Cemetery Ridge</button>
+              <button type="button" data-id="mcpherson-ridge">McPherson Ridge</button>
+              <button type="button" data-id="high-water-mark">High Water Mark</button>
             </div>
-            <form class="itin-mail" name="itinerary-mail" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-itinerary-mail>
-              <input type="hidden" name="form-name" value="itinerary-mail">
-              <p class="hidden-honeypot"><label>Leave blank <input name="bot-field"></label></p>
-              <span class="eyebrow">Mail a copy</span>
-              <p>On Netlify this form is collected. On this concept host it opens an email to tours@hallowedground.test.</p>
-              <div class="field"><label for="itinName">Name</label><input id="itinName" name="guest_name" autocomplete="name" required></div>
-              <div class="field"><label for="itinEmail">Email</label><input id="itinEmail" name="email" type="email" autocomplete="email" required></div>
-              <div class="field"><label for="itinStreet">Street</label><input id="itinStreet" name="street" autocomplete="street-address" required></div>
-              <div class="field"><label for="itinCity">City</label><input id="itinCity" name="city" autocomplete="address-level2" required></div>
-              <div class="field"><label for="itinRegion">State</label><input id="itinRegion" name="region" autocomplete="address-level1" required></div>
-              <div class="field"><label for="itinPostal">ZIP</label><input id="itinPostal" name="postal" autocomplete="postal-code" required></div>
-              <textarea name="itinerary" hidden></textarea>
-              <button type="submit" class="btn btn-ghost btn-sm">Request mailed copy</button>
-            </form>
-            <p data-itinerary-status role="status"></p>
-          </div>
+          </article>
+          <article class="story-beat" data-story-beat data-story-places="little-round-top,big-round-top,devils-den">
+            <span class="eyebrow">July 2, south of the line</span>
+            <h3>Little Round Top, Big Round Top &amp; Devil's Den</h3>
+            <p>At the southern end of the field, <strong>Little Round Top</strong> and <strong>Big Round Top</strong> command the high ground Union forces fought to hold on July 2. Just below them, the jumbled boulders of <strong>Devil's Den</strong> saw brutal close fighting. Our Little Round Top &amp; Devil's Den Hike climbs this rugged terrain with time to explore the rocks and take in the view sharpshooters once used.</p>
+            <div class="story-pins">
+              <button type="button" data-id="little-round-top">Little Round Top</button>
+              <button type="button" data-id="big-round-top">Big Round Top</button>
+              <button type="button" data-id="devils-den">Devil's Den</button>
+            </div>
+          </article>
+          <article class="story-beat" data-story-beat data-story-places="lincoln-square,david-wills-house,national-cemetery">
+            <span class="eyebrow">After the guns</span>
+            <h3>Downtown, the Cemetery &amp; the David Wills House</h3>
+            <p>The story doesn't end on the field. <strong>Lincoln Square</strong> is the civic heart of downtown Gettysburg. The <strong>David Wills House</strong> on the square is where Abraham Lincoln finished the Gettysburg Address the night before delivering it at the dedication of the Soldiers' National Cemetery. Our evening Ghosts of Gettysburg Lantern Walk winds through these downtown streets after dark, pairing real wartime accounts with the buildings where they happened.</p>
+            <div class="story-pins">
+              <button type="button" data-id="lincoln-square">Lincoln Square</button>
+              <button type="button" data-id="david-wills-house">David Wills House</button>
+              <button type="button" data-id="national-cemetery">Soldiers' National Cemetery</button>
+            </div>
+          </article>
+          <article class="story-beat" data-story-beat data-story-places="sample-office,lincoln-square">
+            <span class="eyebrow">Check-in</span>
+            <h3>Where to meet us &amp; parking</h3>
+            <p>This concept uses a sample ticket office at <strong>100 Sample Street, Gettysburg, PA 17325</strong> &mdash; not a live storefront. Use downtown public lots and metered street parking near Lincoln Square. Evening lantern walks use a sample downtown meet at the <strong>Lincoln Square flagpole</strong> (tour geography) &mdash; look for your guide holding a lit lantern.</p>
+            <div class="story-pins">
+              <button type="button" data-id="sample-office">Sample ticket office</button>
+              <button type="button" data-id="lincoln-square">Lincoln Square flagpole</button>
+            </div>
+          </article>
+          <article class="story-beat" data-story-beat data-story-places="lincoln-square,sample-office">
+            <span class="eyebrow">How you arrive</span>
+            <h3>Driving directions</h3>
+            <p>From the north or south, take <strong>US-15</strong> to the Gettysburg exits, then follow Baltimore Street toward downtown. From the east or west, <strong>US-30 (York Street / Chambersburg Street / Lincoln Highway)</strong> leads straight into Lincoln Square. Baltimore Street is a main downtown approach in this narrative, not a live office pin. Most guests arriving from Harrisburg, York, Hanover, or the Maryland line reach downtown in well under an hour.</p>
+          </article>
         </div>
       </div>
     </div>
   </section>
   <!-- sage:end sections/area-map.blade.php -->
 
+  <section class="section section-alt" id="field-list">
+    <div class="wrap">
+      <div class="itinerary-card itinerary-band" data-itinerary>
+        <span class="eyebrow">Your field list</span>
+        <h2>Save this walk.</h2>
+        <p class="lede">Add stops from the map, then save a PDF on this device, print it, or ask us to mail a copy.</p>
+        <h3>Itinerary <span data-itinerary-count>0</span></h3>
+        <p class="lede" data-itinerary-empty>Your list is empty until you add a pin from a popup.</p>
+        <ol class="itin-list" data-itinerary-list></ol>
+        <div class="itin-actions">
+          <button type="button" class="btn btn-primary btn-sm" data-itinerary-pdf>Save as PDF</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-itinerary-print>Print</button>
+        </div>
+        <details class="itin-mail-wrap">
+          <summary>Mail a copy</summary>
+          <form class="itin-mail" name="itinerary-mail" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-itinerary-mail>
+            <input type="hidden" name="form-name" value="itinerary-mail">
+            <p class="hidden-honeypot"><label>Leave blank <input name="bot-field"></label></p>
+            <p>On Netlify this form is collected. On this concept host it opens an email to tours@hallowedground.test.</p>
+            <div class="field"><label for="itinName">Name</label><input id="itinName" name="guest_name" autocomplete="name" required></div>
+            <div class="field"><label for="itinEmail">Email</label><input id="itinEmail" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="itinStreet">Street</label><input id="itinStreet" name="street" autocomplete="street-address" required></div>
+            <div class="field"><label for="itinCity">City</label><input id="itinCity" name="city" autocomplete="address-level2" required></div>
+            <div class="field"><label for="itinRegion">State</label><input id="itinRegion" name="region" autocomplete="address-level1" required></div>
+            <div class="field"><label for="itinPostal">ZIP</label><input id="itinPostal" name="postal" autocomplete="postal-code" required></div>
+            <textarea name="itinerary" hidden></textarea>
+            <button type="submit" class="btn btn-ghost btn-sm">Request mailed copy</button>
+          </form>
+        </details>
+        <p data-itinerary-status role="status"></p>
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="wrap">
-      <div class="prose reveal">
-        <span class="eyebrow">The Battlefield</span>
-        <h2 style="margin-block:0.4rem 1rem; font-size:clamp(1.8rem,4vw,2.5rem);">Where the Battle of Gettysburg was fought</h2>
-        <p>The Battle of Gettysburg was fought July 1&ndash;3, 1863, across the ridges, fields, and hills that surround the borough of Gettysburg, Pennsylvania. Today that ground is preserved as <strong>Gettysburg National Military Park</strong>, one of the most visited Civil War sites in the country, with more than 1,300 monuments spread across roughly 6,000 acres. Our tours are designed to make sense of that landscape &mdash; not just the maps, but the actual rises and swales where the fighting turned.</p>
-
-        <h3>Seminary &amp; Cemetery Ridge</h3>
-        <p>Two long parallel ridges shaped the battle. <strong>Seminary Ridge</strong>, marked by the cupola of the old Lutheran seminary, became the Confederate line after the first day's fighting. Facing it, <strong>Cemetery Ridge</strong> anchored the Union &ldquo;fishhook&rdquo; and became the target of Pickett's Charge on July 3. Our Battlefield Highlights Walking Tour crosses Cemetery Ridge and McPherson Ridge to connect all three days into a single, walkable story.</p>
-
-        <h3>Little Round Top, Big Round Top &amp; Devil's Den</h3>
-        <p>At the southern end of the field, <strong>Little Round Top</strong> and <strong>Big Round Top</strong> command the high ground that Union forces fought desperately to hold on July 2. Just below them, the jumbled boulders of <strong>Devil's Den</strong> saw brutal close fighting. Our Little Round Top &amp; Devil's Den Hike climbs this rugged terrain with time to explore the rocks and take in the view sharpshooters once used.</p>
-
-        <h3>Downtown, the Cemetery &amp; the David Wills House</h3>
-        <p>The story doesn't end on the field. <strong>Lincoln Square</strong> is the civic heart of downtown Gettysburg. The <strong>David Wills House</strong> on the square is where Abraham Lincoln finished the Gettysburg Address the night before delivering it at the dedication of the Soldiers' National Cemetery. Our evening Ghosts of Gettysburg Lantern Walk winds through these downtown streets after dark, pairing real wartime accounts with the buildings where they happened.</p>
-
-        <h3>Where to meet us &amp; parking</h3>
-        <p>This concept uses a sample ticket office at <strong>100 Sample Street, Gettysburg, PA 17325</strong> &mdash; not a live storefront. Use downtown public lots and metered street parking near Lincoln Square. Evening lantern walks use a sample downtown meet at the <strong>Lincoln Square flagpole</strong> (tour geography) &mdash; look for your guide holding a lit lantern.</p>
-
-        <h3>Driving directions</h3>
-        <p>From the north or south, take <strong>US-15</strong> to the Gettysburg exits, then follow Baltimore Street toward downtown. From the east or west, <strong>US-30 (York Street / Chambersburg Street / Lincoln Highway)</strong> leads straight into Lincoln Square. Baltimore Street is a main downtown approach in this narrative, not a live office pin. Most guests arriving from Harrisburg, York, Hanover, or the Maryland line reach downtown in well under an hour.</p>
-      </div>
-
-      <div class="reveal" style="margin-top:2.4rem;">
+      <div class="reveal">
         <span class="eyebrow">Nearby Towns We Serve</span>
         <h3 style="margin-block:0.4rem 0.6rem;">Adams County &amp; beyond</h3>
         <p style="color:var(--color-ink-soft); max-width:60ch;">We welcome guests from Gettysburg and the surrounding Adams County communities. Approximate distances to our 100 Sample Street meeting point:</p>

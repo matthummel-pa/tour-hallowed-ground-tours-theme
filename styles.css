@@ -1064,6 +1064,103 @@ body.modal-locked{ overflow:hidden; }
    Field diorama (area page) + owner admin
    Sage: sections/area-map.blade.php + ACF area_map_places
 ============================================ */
+.story-map-layout{
+  display:grid;
+  gap:1.5rem;
+  align-items:start;
+}
+.story-map-col{ min-width:0; }
+.story-map-sticky{
+  position:sticky;
+  top: calc(var(--header-h) + 10px);
+  z-index: 4;
+}
+@media (min-width:900px){
+  .story-map-sticky{ top: calc(var(--header-h) + var(--rail-h) + 10px); }
+}
+@media (min-width:1040px){
+  .story-map-layout{
+    grid-template-columns: minmax(0,1.2fr) minmax(300px,0.8fr);
+  }
+}
+.story-map-layout .diorama-stage.is-ol{
+  margin-bottom: 0.85rem;
+}
+@media (max-width:1039px){
+  .story-map-layout .ol-host{
+    height: 42vh;
+    min-height: 280px;
+  }
+}
+.story-map-tools{
+  background: var(--color-surface);
+  border:1px solid var(--color-border);
+  padding: 0.85rem 0.9rem 0.95rem;
+  clip-path: var(--ticket);
+}
+.story-map-tools .map-filters{
+  margin-bottom: 0.75rem;
+}
+.story-spine{
+  min-width: 0;
+}
+.story-beat{
+  padding: 1.15rem 0 1.6rem;
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.1rem;
+  min-height: min(52vh, 420px);
+  color: var(--color-ink-soft);
+}
+.story-beat h3{
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  color: var(--parchment-50);
+  margin: 0.25rem 0 0.7rem;
+}
+.story-beat p{ margin: 0 0 0.85rem; }
+.story-beat.is-active{
+  border-left-color: var(--gold-500);
+}
+.story-beat.is-active h3{ color: var(--gold-300); }
+.story-pins{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+  margin: 0.35rem 0 0;
+}
+.story-pins button{
+  background: var(--color-surface-2);
+  border:1px solid var(--color-border);
+  color: var(--color-ink);
+  padding:0.4rem 0.65rem;
+  cursor:pointer;
+  font-size:0.82rem;
+}
+.story-pins button.is-active,
+.story-pins button:hover{
+  border-color: var(--gold-500);
+  background: #1a2734;
+}
+.itinerary-band{
+  max-width: 720px;
+}
+.itinerary-band h2{
+  margin: 0.2rem 0 0.55rem;
+}
+.itin-mail-wrap{
+  margin: 0.4rem 0 0.6rem;
+}
+.itin-mail-wrap summary{
+  cursor:pointer;
+  color: var(--gold-300);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  list-style: none;
+}
+.itin-mail-wrap summary::-webkit-details-marker{ display:none; }
+.itin-mail-wrap[open] summary{ margin-bottom: 0.7rem; }
+
 .diorama-layout{
   display:grid;
   gap:1.5rem;
