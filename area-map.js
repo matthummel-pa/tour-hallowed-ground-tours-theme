@@ -112,7 +112,7 @@
       li.className = "place-row";
       li.innerHTML =
         "<button type=\"button\" class=\"place-main\" data-id=\"" + esc(place.id) + "\" data-open-map=\"" + esc(place.id) + "\"><b>" + esc(place.title) + "</b><span>" + esc(catLabel(place.category)) + "</span></button>" +
-        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(place.id) + "\" aria-label=\"View " + esc(place.title) + " on the map\">" + MAP_PIN + "</button>" +
+        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(place.id) + "\" title=\"View on map\" aria-label=\"View " + esc(place.title) + " on the map\">" + MAP_PIN + "</button>" +
         "<button type=\"button\" class=\"place-add-btn\" data-add-itinerary=\"" + esc(place.id) + "\">Add</button>";
       list.appendChild(li);
     });
@@ -443,7 +443,7 @@
     var filters = { monument: true, tour: true, building: true, area: true };
 
     function placeMatchesFilter(place) {
-      var box = document.querySelector("[data-map-filters]");
+      var box = host.querySelector("[data-map-filters]");
       if (box) {
         box.querySelectorAll("[data-filter]").forEach(function (el) {
           var key = el.getAttribute("data-filter");
@@ -505,7 +505,7 @@
           row.className = "place-row";
           row.innerHTML =
             "<button type=\"button\" class=\"place-main\" data-id=\"" + esc(m.id) + "\" data-open-map=\"" + esc(m.id) + "\"><b>" + esc(m.title) + "</b><span>Monument</span></button>" +
-            "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(m.id) + "\" aria-label=\"View " + esc(m.title) + " on the map\">" + MAP_PIN + "</button>";
+            "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(m.id) + "\" title=\"View on map\" aria-label=\"View " + esc(m.title) + " on the map\">" + MAP_PIN + "</button>";
           searchHits.appendChild(row);
         });
       });
@@ -517,7 +517,7 @@
       });
     }
 
-    var filterBox = document.querySelector("[data-map-filters]");
+    var filterBox = host.querySelector("[data-map-filters]");
     if (filterBox && !filterBox.dataset.bound) {
       filterBox.dataset.bound = "1";
       filterBox.addEventListener("click", function (e) {
@@ -988,6 +988,7 @@
   function openMapOverlay(id) {
     var overlay = document.querySelector("[data-map-overlay]");
     var stage = document.querySelector("[data-diorama][data-diorama-mode='view']");
+    if (stage && id) stage._pendingSelect = id;
     if (!overlay) {
       if (stage && stage._hgSelect && id) stage._hgSelect(id);
       return;
@@ -997,11 +998,17 @@
     document.body.classList.add("modal-locked");
     var run = function () {
       if (stage && stage._olmap) stage._olmap.updateSize();
-      if (id && stage && stage._hgSelect) stage._hgSelect(id);
+      var pick = id || (stage && stage._pendingSelect);
+      if (pick && stage && stage._hgSelect) {
+        stage._hgSelect(pick);
+        stage._pendingSelect = "";
+      }
     };
     requestAnimationFrame(function () {
       run();
-      setTimeout(run, 140);
+      setTimeout(run, 80);
+      setTimeout(run, 280);
+      setTimeout(run, 600);
     });
   }
 
@@ -1021,6 +1028,7 @@
       btn.type = "button";
       btn.className = "inline-map-btn";
       btn.setAttribute("data-open-map", id);
+      btn.setAttribute("title", "View on map");
       btn.setAttribute("aria-label", "View " + String(el.textContent || "this place").trim() + " on the map");
       btn.innerHTML = MAP_PIN;
       el.appendChild(btn);
