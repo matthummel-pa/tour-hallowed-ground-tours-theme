@@ -1064,9 +1064,75 @@ body.modal-locked{ overflow:hidden; }
    Field diorama (area page) + owner admin
    Sage: sections/area-map.blade.php + ACF area_map_places
 ============================================ */
-.diorama-layout--stack{
-  grid-template-columns: 1fr;
+.map-field-overlay{
+  z-index: 320;
+  align-items: center;
+  padding: 1rem;
 }
+.map-field-overlay[hidden]{ display: none !important; }
+.map-overlay-panel{
+  max-width: min(1100px, 100%);
+  width: 100%;
+  height: min(86vh, 840px);
+  max-height: 92vh;
+}
+.map-overlay-body{
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 0.55rem 0.7rem 0.75rem;
+}
+.map-overlay-body .diorama-stage{
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+}
+.map-overlay-body .diorama-stage.is-ol{
+  min-height: 0;
+}
+.map-overlay-body .ol-host{
+  height: 100%;
+  min-height: 360px;
+}
+.place-row{
+  display: flex;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+.place-row .place-main{ flex: 1; width: auto; }
+.dio-place-list .place-map-btn,
+.itin-list .place-map-btn{
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--gold-500);
+}
+.inline-map-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  margin: 0 0.12em;
+  padding: 0;
+  vertical-align: -0.2em;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--gold-500);
+  cursor: pointer;
+}
+.inline-map-btn:hover,
+.place-map-btn:hover,
+.place-map-btn.is-active{
+  border-color: var(--gold-500);
+  background: #1a2734;
+}
+.section-head .btn{ margin-top: 0.85rem; }
 .map-under-card{
   background: var(--color-surface);
   border: 1px solid var(--color-border);

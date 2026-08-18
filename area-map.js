@@ -93,6 +93,8 @@
       });
   }
 
+  var MAP_PIN = "<svg class=\"map-pin-icon\" width=\"14\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" aria-hidden=\"true\"><path d=\"M12 22s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z\" stroke=\"currentColor\" stroke-width=\"2\"/><circle cx=\"12\" cy=\"10\" r=\"2.4\" fill=\"currentColor\"/></svg>";
+
   function fillList(places, opts) {
     var list = document.querySelector("[data-diorama-list]");
     var visible = places.filter(function (p) {
@@ -102,21 +104,12 @@
     list.innerHTML = "";
     visible.forEach(function (place) {
       var li = document.createElement("li");
-      var b = document.createElement("button");
-      b.type = "button";
-      b.setAttribute("data-id", place.id);
-      b.innerHTML = "<b>" + esc(place.title) + "</b><span>" + esc(catLabel(place.category)) + "</span>";
-      li.appendChild(b);
+      li.className = "place-row";
+      li.innerHTML =
+        "<button type=\"button\" class=\"place-main\" data-id=\"" + esc(place.id) + "\" data-open-map=\"" + esc(place.id) + "\"><b>" + esc(place.title) + "</b><span>" + esc(catLabel(place.category)) + "</span></button>" +
+        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(place.id) + "\" aria-label=\"View " + esc(place.title) + " on the map\">" + MAP_PIN + "</button>";
       list.appendChild(li);
     });
-    if (!list.dataset.selectBound) {
-      list.dataset.selectBound = "1";
-      list.addEventListener("click", function (e) {
-        var btn = e.target.closest("button[data-id]");
-        var host = document.querySelector("[data-diorama]");
-        if (btn && host && host._hgSelect) host._hgSelect(btn.getAttribute("data-id"));
-      });
-    }
     return visible;
   }
 
@@ -502,16 +495,19 @@
         monuments.filter(function (m) {
           return m.title.toLowerCase().indexOf(q) !== -1;
         }).slice(0, 12).forEach(function (m) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.setAttribute("data-id", m.id);
-          b.innerHTML = "<b>" + esc(m.title) + "</b><span>Monument</span>";
-          searchHits.appendChild(b);
+          var row = document.createElement("div");
+          row.className = "place-row";
+          row.innerHTML =
+            "<button type=\"button\" class=\"place-main\" data-id=\"" + esc(m.id) + "\" data-open-map=\"" + esc(m.id) + "\"><b>" + esc(m.title) + "</b><span>Monument</span></button>" +
+            "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(m.id) + "\" aria-label=\"View " + esc(m.title) + " on the map\">" + MAP_PIN + "</button>";
+          searchHits.appendChild(row);
         });
       });
       searchHits.addEventListener("click", function (e) {
-        var btn = e.target.closest("button[data-id]");
-        if (btn && stage._hgSelect) stage._hgSelect(btn.getAttribute("data-id"));
+        var btn = e.target.closest("[data-open-map]");
+        if (btn) return;
+        var legacy = e.target.closest("button[data-id]");
+        if (legacy) openMapOverlay(legacy.getAttribute("data-id"));
       });
     }
 
@@ -740,6 +736,7 @@
     items.forEach(function (stop, i) {
       var li = document.createElement("li");
       li.innerHTML = "<b>" + esc(stop.title) + "</b><span>" + esc(formatCoords(stop.lat, stop.lng)) + "</span>" +
+        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(stop.id) + "\" aria-label=\"View " + esc(stop.title) + " on the map\">" + MAP_PIN + "</button>" +
         "<button type=\"button\" class=\"itin-remove\" data-remove-itinerary=\"" + esc(stop.id) + "\" aria-label=\"Remove " + esc(stop.title) + "\">Remove</button>";
       li.style.order = String(i);
       list.appendChild(li);
@@ -872,6 +869,73 @@
     win.document.close();
     win.focus();
     win.print();
+  }
+
+  function openMapOverlay(id) {
+    var overlay = document.querySelector("[data-map-overlay]");
+    var stage = document.querySelector("[data-diorama][data-diorama-mode='view']");
+    if (!overlay) {
+      if (stage && stage._hgSelect && id) stage._hgSelect(id);
+      return;
+    }
+    overlay.hidden = false;
+    overlay.classList.add("is-open");
+    document.body.classList.add("modal-locked");
+    var run = function () {
+      if (stage && stage._olmap) stage._olmap.updateSize();
+      if (id && stage && stage._hgSelect) stage._hgSelect(id);
+    };
+    requestAnimationFrame(function () {
+      run();
+      setTimeout(run, 140);
+    });
+  }
+
+  function closeMapOverlay() {
+    var overlay = document.querySelector("[data-map-overlay]");
+    if (!overlay) return;
+    overlay.classList.remove("is-open");
+    overlay.hidden = true;
+    document.body.classList.remove("modal-locked");
+  }
+
+  function decorateMapPlaces() {
+    document.querySelectorAll("[data-map-place]").forEach(function (el) {
+      if (el.querySelector("[data-open-map]")) return;
+      var id = el.getAttribute("data-map-place");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "inline-map-btn";
+      btn.setAttribute("data-open-map", id);
+      btn.setAttribute("aria-label", "View " + String(el.textContent || "this place").trim() + " on the map");
+      btn.innerHTML = MAP_PIN;
+      el.appendChild(btn);
+    });
+    document.querySelectorAll(".inline-map-btn[data-open-map]:empty").forEach(function (btn) {
+      btn.innerHTML = MAP_PIN;
+    });
+  }
+
+  function bindMapOverlay() {
+    var overlay = document.querySelector("[data-map-overlay]");
+    if (!overlay || overlay.dataset.bound) return;
+    overlay.dataset.bound = "1";
+    var closer = overlay.querySelector("[data-map-overlay-close]");
+    if (closer) closer.addEventListener("click", closeMapOverlay);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeMapOverlay();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || !overlay.classList.contains("is-open")) return;
+      if (overlay.querySelector(".ol-popup.is-open")) return;
+      closeMapOverlay();
+    });
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-open-map]");
+      if (!btn) return;
+      e.preventDefault();
+      openMapOverlay(btn.getAttribute("data-open-map") || "");
+    });
   }
 
   function showMapTab(name) {
@@ -1160,6 +1224,8 @@
       loadMonuments(function (monuments) {
         bindItineraryUi();
         bindMapTabs();
+        bindMapOverlay();
+        decorateMapPlaces();
         renderView(stage, places, { monuments: monuments });
       });
     });
