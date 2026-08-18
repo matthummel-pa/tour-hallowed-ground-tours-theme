@@ -256,8 +256,15 @@
           <label class="dio-search-label" for="monument-search">Find a monument</label>
           <input id="monument-search" class="dio-search" type="search" data-monument-search placeholder="Pennsylvania Memorial, 20th Maine…" autocomplete="off">
           <div class="dio-place-list" data-monument-hits></div>
-          <p class="dio-list-kicker">Tour geography</p>
-          <ul class="dio-place-list" data-diorama-list></ul>
+          <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
+        </aside>
+        <div class="diorama-under">
+          <div class="field-index">
+            <p class="dio-list-kicker">Tour geography</p>
+            <h3>Names we use on the field.</h3>
+            <p class="lede">Click a tour place to jump the map. Add stops to your field list from a popup.</p>
+            <ul class="dio-place-list" data-diorama-list></ul>
+          </div>
           <div class="itinerary-card" data-itinerary>
             <span class="eyebrow">Your field list</span>
             <h3>Itinerary <span data-itinerary-count>0</span></h3>
@@ -283,8 +290,7 @@
             </form>
             <p data-itinerary-status role="status"></p>
           </div>
-          <a class="dio-admin-link" href="admin.html#area-map">Edit this map in owner admin</a>
-        </aside>
+        </div>
       </div>
     </div>
   </section>

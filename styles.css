@@ -1070,8 +1070,33 @@ body.modal-locked{ overflow:hidden; }
   align-items:stretch;
 }
 @media (min-width:1040px){
-  .diorama-layout{ grid-template-columns: minmax(0,1.45fr) minmax(280px,0.7fr); }
+  .diorama-layout{
+    grid-template-columns: minmax(0,1.45fr) minmax(280px,0.7fr);
+  }
+  .diorama-stage{ grid-column: 1; grid-row: 1; }
+  .diorama-panel{ grid-column: 2; grid-row: 1; }
+  .diorama-under{ grid-column: 1 / -1; grid-row: 2; }
 }
+.diorama-under{
+  display:grid;
+  gap:1.5rem;
+  align-items:start;
+}
+@media (min-width:860px){
+  .diorama-under{ grid-template-columns: 1fr 1fr; }
+}
+.field-index{
+  background: var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding:1.3rem 1.25rem 1.4rem;
+  clip-path: var(--ticket);
+}
+.field-index h3{
+  font-size:1.35rem;
+  margin:0.2rem 0 0.5rem;
+}
+.field-index .dio-place-list{ max-height: min(52vh, 420px); }
 .diorama-stage{
   --yaw:-24deg;
   --pitch:60deg;
@@ -1191,17 +1216,19 @@ body.modal-locked{ overflow:hidden; }
   font-size: 0.88rem;
 }
 .itinerary-card{
-  margin: 1.1rem 0 1rem;
-  padding: 0.9rem 0.95rem;
+  margin: 0;
+  padding: 1.3rem 1.25rem 1.4rem;
   border: 1px solid var(--color-border);
-  background: #0b141c;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  clip-path: var(--ticket);
 }
 .itinerary-card h3{ font-size: 1.2rem; margin: 0.2rem 0 0.5rem; }
 .itin-list{
   list-style: decimal;
   padding-left: 1.2rem;
   margin: 0.4rem 0 0.8rem;
-  max-height: 180px;
+  max-height: min(40vh, 280px);
   overflow: auto;
 }
 .itin-list li{ margin: 0.35rem 0; }
