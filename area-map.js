@@ -849,7 +849,7 @@
     items.forEach(function (stop, i) {
       var li = document.createElement("li");
       li.innerHTML = "<b>" + esc(stop.title) + "</b><span>" + esc(formatCoords(stop.lat, stop.lng)) + "</span>" +
-        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(stop.id) + "\" aria-label=\"View " + esc(stop.title) + " on the map\">" + MAP_PIN + "</button>" +
+        "<button type=\"button\" class=\"place-map-btn\" data-open-map=\"" + esc(stop.id) + "\" title=\"View on map\" aria-label=\"View " + esc(stop.title) + " on the map\">" + MAP_PIN + "</button>" +
         "<button type=\"button\" class=\"itin-remove\" data-remove-itinerary=\"" + esc(stop.id) + "\" aria-label=\"Remove " + esc(stop.title) + "\">Remove</button>";
       li.style.order = String(i);
       list.appendChild(li);
